@@ -1,0 +1,54 @@
+html { height: 100%; scroll-behavior: smooth; }
+body { display: flex; min-height: 100vh; flex-direction: column; background-color: #000000; font-family: 'Chakra Petch', sans-serif; }
+
+#particles-js { position: fixed; width: 100%; height: auto; top: 0; left: 0; bottom: 0; right: 0; overflow: hidden; z-index: -1; }
+.pace-running > *:not(.pace) { opacity: 0; }
+.pace {-webkit-pointer-events: none;pointer-events: none;-webkit-user-select: none;-moz-user-select: none;user-select: none;z-index: 2000;position: fixed;margin: auto;top: 0;left: 0;right: 0;bottom: 0;height: 5px;width: 200px;background: #fff;border: 1px solid #2299dd;overflow: hidden;}
+.pace .pace-progress {-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-ms-box-sizing: border-box;-o-box-sizing: border-box;box-sizing: border-box;-webkit-transform: translate3d(0, 0, 0);-moz-transform: translate3d(0, 0, 0);-ms-transform: translate3d(0, 0, 0);-o-transform: translate3d(0, 0, 0);transform: translate3d(0, 0, 0);max-width: 200px;position: fixed;z-index: 2000;display: block;position: absolute;top: 0;right: 100%;height: 100%;width: 100%;background: #2299dd;}
+.pace.pace-inactive {display: none;}
+
+#console {
+	font-family: courier, monospace;
+	width:800px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:80px;
+	font-size:17px;
+	color: #c6e2ff;
+	
+}
+
+a {
+	color: #0bc;
+	text-decoration: none;
+}
+
+#a {
+	color: #0f0;
+}
+
+#c {
+	color: #0bc;
+}
+
+#b {
+	color: #ff0096;
+}
+
+#k {
+    	animation: change 1s;
+}
+
+#op{
+    	color: #888888
+}
+
+/*-- Animation Keyframes --*/
+
+
+.text-glow {
+    text-shadow: 0px 0px 15px #00e2ff;
+}
+.white-text {
+    color: #fff !important;
+}

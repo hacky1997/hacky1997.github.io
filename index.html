@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="eng">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="images/index.ico" type="image/icon type">
+        <title>Sayak Naskar</title> 
+        <script type="text/javascript"  src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
+        <script async src="js/pace.min.js"></script>
+        <link rel="stylesheet" href="css/index.css">
+  </head> 
+  <body >
+    <script type="text/javascript" src="js/index.js"></script> 
+    <div id="particles-js"></div>
+    <div id="console" class="white-text text-glow"></div>
+    <script type="text/javascript" src="js/index2.js"></script>
+    <script src="js/particles.min.js"></script>
+    <script src="js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script>particlesJS.load('particles-js', '/js/particlesjs-config.json', function() { console.log('callback - particles.js config loaded'); });</script>
+    <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.modal');
+        var instances = M.Modal.init(elems, {"dismissible": false, "preventScrolling": false});
+        });
+
+    function blurred() {
+        var body = document.getElementById('container');
+        body.className += ' blur';
+    };
+
+    function clearblur() {
+        var body = document.getElementById('container');
+        body.classList.remove("blur");
+        console.log(body.className);
+    };
+    </script>
+  </body>
+</html>

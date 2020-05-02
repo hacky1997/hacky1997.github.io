@@ -1,0 +1,25 @@
+<span id="a">root@sayak</span>:<span id="b">~</span><span id="c">$</span> cat sayak.txt
+<center><b>Sayak Naskar</b></center>
+<center><a href="mailto:sayaknaskar@gmail.com">Email</a> | <a href="https://github.com/hacky1997">Github</a> | <a href="https://linkedin.com/in/sayak-naskar-a746ab152">Linkedin</a> </center>
+Hey There! Myself <b>Sayak Naskar</b>, 4th year CSE student from <b>Techno India University</b>. I am from Kolkata, West Bengal, India. I am experienced in <b>Ethical Hacking</b>, <b>Bug Hunting</b>, <b>Pentesting</b> & <b>Red Teaming</b> also love to contribute in open sources. I am also a <b>Python Developer</b>. 
+<br>
+<span id="a">root@sayak</span>:<span id="b">~</span><span id="c">$</span> cat education.txt
+<center><strong>EDUCATION</strong></center>
+TECHNO INDIA UNIVERSITY
+B.TECH IN COMPUTER SCIENCE
+Expected May 2020 | Kolkata, India
+CGPA: 7.58/10 (upto 6th sem)
+<br>
+<span id="a">root@sayak</span>:<span id="b">~</span><span id="c">$</span> cat course.txt
+<center><b>COURSEWORK</b></center>
+SAP CERTIFIED ASSOCIATE - UTILITIES WITH SAP ERP 6.0 SAP University Alliances
+<br>
+<center><b>SKILLS</b></center>
+<u>Work Experienced</u>
+• Python3
+• HTML5 • CSS3 • PHP • Git • Aws-cli
+<u>Familiar:</u>
+• PHP • Python • HTML/CSS
+<u>Operating Systems</u>
+• Linux • Windows
+
