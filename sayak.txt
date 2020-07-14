@@ -3,5 +3,6 @@
 <center><a href="mailto:sayaknaskar@gmail.com">Email</a> | <a href="https://github.com/hacky1997">Github</a> | <a href="https://linkedin.com/in/sayak-naskar-a746ab152">Linkedin</a> </center>
 Hey There! Myself <b>Sayak Naskar</b>, B.Tech. Computer Science & Engineer student, graduated from Techno India University.<br>
 A creative professional guy with pretty much skills. Comfortable enough in interacting with new people at any level of. A dedicated and passionate security guy with some deep knowledge in <b>programming, web development, penetration testing, security research, malware analysis, binary exploitation & vulnerability assessment.</b> <br><br>
-A self taught guy, love to work with full dedication and with full focus, like to read books, learn new languages and try to implement those into real life projects. I love to contribute codes in open source & do bug hunting.
+A self taught guy, love to work with full dedication and with full focus, like to read books, learn new languages and try to implement those into real life projects. I love to contribute codes in open source & do bug hunting.<br>
+<span id="a">root@sayak</span>:<span id="b">~</span><span id="c">$</span> exit
 
