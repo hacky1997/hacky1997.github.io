@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Secret Message For My Special One | Ranita Roy aka Putu</title>
+  <link href="https://fonts.googleapis.com/css?family=Cutive+Mono" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Bangers" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Homemade+Apple" rel="stylesheet">
+
+<style>
+body {
+  background-color: #171720;
+  color: #efefef;
+  font-family: 'Cutive Mono', cursive;
+  font-size: 2rem;
+}
+body .secret {
+  line-height: 2;
+  text-align: center;
+}
+body .secret:nth-child(2) {
+  position: fixed;
+  z-index: -1;
+}
+body .secret:nth-child(3) {
+  position: absolute;
+  margin: 390px 0;
+}
+
+.hidden {
+  color: transparent;
+}
+
+.content-placeholder {
+  min-height: 500vh;
+}
+
+.codepen-title {
+  font-family: 'Bangers', cursive;
+  font-size: 4rem;
+  text-align: center;
+  padding: 50px 0;
+  margin-bottom: 25px;
+  color: #e6c9fc;
+}
+</style>
+
+</head>
+
+<body>
+<!-- partial:index.partial.html -->
+<div class="codepen-title">💞 Scroll to reveal your secret message 🥰</div>
+<div class="secret secret1"></div>
+<div class="secret secret2" id="scrollable_secret"></div>
+<div class="content-placeholder"></div>
+<!-- partial -->
+
+<script type="text/javascript">
+  var secretMessage = "UHV0dSBzYXlzIGRvbnQgYXNrIG1lIGFueXRoaW5nISBJdCdzIG5vbmUgb2YgeW91ciBidXNpbmVzcyEgQnV0IG15IG1pbmQgZm9ybWVkIGEgdGhvdWdodCwgYSBzZWNyZXQgbWVzc2FnZSB0byBjcmVhdGUuIEEgcHV6emxlIHRvIGFzc2VtYmxlLCBhbmQgc25lYWtpbHkgcmVsYXRlLCBiZWNhdXNlIG15IGhlYXJ0cyBzbyBmdWxsIHRoYXQgbXkgZmVlbGluZ3MgbXVzdCBlbGF0ZS4gU28sIHBsZWFzZSBkb24ndCBiZSBzYWQgUHV0dS4gWW91IGtub3cgd2hhdCB0aGVyZSBpcyBhbHdheXMgYSBjcmFjayBvZiBsaWdodCBpbiB0aGUgZGFya2Vuc3MuIEZpbmQgaXQuIERvbid0IGJlIHNhZCAmIGRvbid0IGdpdmUgdXAgb24geW91ciBkcmVhbXMgcGxlYXNlIFJhbml0YS4gRG9uJ3QgYmUgc2FkLCBCZSBoYXBweSBhbHdheXMhISBZb3UgY2FuIGRvIHRlcnJpYmxlIHRoaW5ncyBJIGtub3cgdGhhdCB2ZXJ5IHdlbGwuIFNvLCBwbGVhc2UgZm9jdXMgb24geW91ciBkcmVhbXMsIG1ha2Ugc29tZSBnb2Fscy4gQWZ0ZXJhbGwgeW91IGFsc28gZGVzZXJ2ZSBoYXBwaW5lc3MuIFlvdSBhcmUgaW1wZXJmZWN0bHkgcGVyZmVjdCBSYW5pdGEuIEJlIGFuIE9wdGltaXN0aWMgZ2lybCwgUmFuaXRhLiBBbmQgZmluYWxseSwgYSBjaG9kbmEgcGxlYXNlIG1vb2Qgb2ZmIGtvcmlzbmEgcmUuIA==";
+
+  // Decode the secretMessage
+  var decodedString = atob(secretMessage);
+  console.log("Decoded: " + decodedString);
+
+  // First Div
+  // set the first secret
+  var secret1 = decodedString;
+
+  // split up the string by individual character, assign to an array
+  var secret1split = secret1.split("");
+
+  // loop through each item in the array you made.  if the index of the item is even, add a span around it with class hidden
+  for (var i = 0; i < secret1split.length; i++) {
+    if(i%2==0){
+    secret1split[i] = '<span class="hidden">' + secret1split[i] + '</span>';
+    }
+  }
+
+  // join your array back together, returns  string
+  var secretjoined = secret1split.join('');
+
+  // write this to the inner html of the div again
+  document.querySelector('.secret1').innerHTML = secretjoined;
+
+  // Second Div
+  // same as first div, but adding the span tag to all items with odd indexes
+  var secret2 = decodedString;
+
+  var secret2split = secret2.split("");
+
+  for (var i = 0; i < secret2split.length; i++) {
+    if(i%2!=0){
+    secret2split[i] = '<span class="hidden">' + secret2split[i] + '</span>';
+    }
+  }
+
+  var secret2joined = secret2split.join('');
+  document.querySelector('.secret2').innerHTML = secret2joined;
+</script>
+
+</body>
+</html>
