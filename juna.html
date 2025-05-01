@@ -2,99 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- 1. Responsive viewport -->
+  <!-- make responsive -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>🌙 Juna, your moment awaits…</title>
-  <!-- 2. One playful font + system UI stack -->
-  <link 
-    href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah&display=swap" 
-    rel="stylesheet">
+  <title>Secret Message For My Special One | Juna</title>
+  <!-- original fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Bangers&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Homemade+Apple&display=swap" rel="stylesheet">
   <style>
-    /* 3. Base sizing & colors */
-    html { font-size: 16px; }
     body {
-      margin: 0; padding: 0;
-      background: #171720; color: #efefef;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 1.25rem; line-height: 1.4;
-      display: flex; flex-direction: column; align-items: center;
+      background-color: #171720;
+      color: #efefef;
+      font-family: 'Cutive Mono', monospace;
+      font-size: 2rem;
+      margin: 0;
+      padding: 0;
     }
-    @media (max-width: 480px) {
-      body { font-size: 1.1rem; }
-    }
-
-    /* 4. Title styling */
     .codepen-title {
-      font-family: 'Gloria Hallelujah', cursive;
-      font-size: 2.5rem; text-align: center;
-      padding: 2rem 1rem; color: #e6c9fc;
+      font-family: 'Bangers', cursive;
+      font-size: 4rem;
+      text-align: center;
+      padding: 50px 0;
+      margin-bottom: 25px;
+      color: #e6c9fc;
     }
-
-    /* 5. Secret message container */
     .secret {
-      font-family: 'Gloria Hallelujah', cursive;
-      font-size: 1.8rem; text-align: center;
-      max-width: 90%; min-height: 4rem;
+      line-height: 1;
+      text-align: center;
       white-space: pre-wrap;
-      margin: 2rem auto;
+      max-width: 90%;
+      margin: auto;
+    }
+    /* layer them: first layer fixed, second layer absolute */
+    .secret1 {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+    }
+    .secret2 {
+      position: absolute;
+      margin: 390px 0;
+    }
+    .hidden {
+      color: transparent;
+    }
+    .content-placeholder {
+      height: 500vh;
     }
   </style>
 </head>
+
 <body>
-
-  <div class="codepen-title">
-    💞 Scroll or wait for your secret message 🥰
-  </div>
-
-  <div class="secret"> </div> <!-- will be filled/animated by JS -->
-
-  <div style="height:100vh;"></div> <!-- for scrolling tease -->
+  <div class="codepen-title">💞 Scroll to reveal your secret message 🥰</div>
+  <div class="secret secret1"></div>
+  <div class="secret secret2"></div>
+  <div class="content-placeholder"></div>
 
   <script>
-  // === The raw secret, decoded ===
-  const raw = "Putu says don’t ask me anything! It’s none of your business! But in real life, Ranita. And finally, a chodna please mood off korisna re.";
+    // ——— decoded secret message ———
+    var decoded = "Putu says don’t ask me anything! It’s none of your business! But in real life, Ranita. And finally, a chodna please mood off korisna re.";
 
-  // === Simple “scramble → reveal” function ===
-  const letters = "!<>-_\\/[]{}—=+*^?#________";
-  const secretEl = document.querySelector('.secret');
-  let buffer = Array.from(raw).map(_ => "_");
-
-  function randomChar() {
-    return letters[Math.floor(Math.random() * letters.length)];
-  }
-
-  function iterate() {
-    let done = true;
-    buffer = buffer.map((ch, i) => {
-      if (ch === raw[i]) return ch;
-      done = false;
-      // 20% chance to lock in correct char this frame
-      if (Math.random() < 0.2) return raw[i];
-      return randomChar();
-    });
-    secretEl.textContent = buffer.join("");
-    if (!done) requestAnimationFrame(iterate);
-  }
-
-  // === Kick off on scroll or 1s timeout, whichever first ===
-  let started = false;
-  function start() {
-    if (started) return;
-    started = true;
-    iterate();
-  }
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) start();
-  });
-  setTimeout(start, 1000);
-
-  // === Title nudge if she switches tabs ===
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-      document.title = "🌅 Welcome back, Juna…";
-      setTimeout(() => document.title = "🌙 Juna, your moment awaits…", 3000);
+    // first layer: hide even-indexed characters
+    var arr1 = decoded.split("");
+    for (var i = 0; i < arr1.length; i++) {
+      if (i % 2 === 0) {
+        arr1[i] = '<span class="hidden">' + arr1[i] + '</span>';
+      }
     }
-  });
+    document.querySelector('.secret1').innerHTML = arr1.join("");
+
+    // second layer: hide odd-indexed characters
+    var arr2 = decoded.split("");
+    for (var i = 0; i < arr2.length; i++) {
+      if (i % 2 !== 0) {
+        arr2[i] = '<span class="hidden">' + arr2[i] + '</span>';
+      }
+    }
+    document.querySelector('.secret2').innerHTML = arr2.join("");
+
+    // change title to grab attention
+    document.title = "🌙 Juna, your moment awaits…";
   </script>
 </body>
 </html>
