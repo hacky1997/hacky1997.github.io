@@ -2,88 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- make responsive -->
+  <!-- 1. Make it mobile-friendly -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Secret Message For My Special One | Juna</title>
-  <!-- original fonts -->
+
+  <!-- 2. Your original fonts -->
   <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Bangers&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Homemade+Apple&display=swap" rel="stylesheet">
+
   <style>
     body {
+      margin: 0; padding: 0;
       background-color: #171720;
       color: #efefef;
       font-family: 'Cutive Mono', monospace;
       font-size: 2rem;
-      margin: 0;
-      padding: 0;
+      overflow-x: hidden;
     }
     .codepen-title {
       font-family: 'Bangers', cursive;
       font-size: 4rem;
       text-align: center;
-      padding: 50px 0;
-      margin-bottom: 25px;
       color: #e6c9fc;
+      padding: 50px 0 25px;
     }
     .secret {
-      line-height: 1;
+      position: absolute;
+      width: 100%;
       text-align: center;
+      line-height: 1;
       white-space: pre-wrap;
-      max-width: 90%;
-      margin: auto;
-    }
-    /* layer them: first layer fixed, second layer absolute */
-    .secret1 {
-      position: fixed;
-      top: 50%;
+      top: 50vh;    /* vertical center of viewport */
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: -1;
     }
+    .secret1 { z-index: 1; }   /* hides even letters */
     .secret2 {
-      position: absolute;
-      margin: 390px 0;
+      z-index: 2;              /* hides odd letters */
+      top: 100vh;              /* placed one viewport below */
     }
     .hidden {
       color: transparent;
     }
     .content-placeholder {
-      height: 500vh;
+      height: 200vh;          /* enough scroll to bring layer 2 into place */
     }
   </style>
 </head>
-
 <body>
   <div class="codepen-title">💞 Scroll to reveal your secret message 🥰</div>
+
+  <!-- layer 1: hides even-indexed chars -->
   <div class="secret secret1"></div>
+  <!-- layer 2: hides odd-indexed chars, starts off-screen -->
   <div class="secret secret2"></div>
+
+  <!-- the huge placeholder to allow scrolling -->
   <div class="content-placeholder"></div>
 
   <script>
-    // ——— decoded secret message ———
+    // ——— your actual secret text ———
     var decoded = "Putu says don’t ask me anything! It’s none of your business! But in real life, Ranita. And finally, a chodna please mood off korisna re.";
 
-    // first layer: hide even-indexed characters
-    var arr1 = decoded.split("");
-    for (var i = 0; i < arr1.length; i++) {
-      if (i % 2 === 0) {
-        arr1[i] = '<span class="hidden">' + arr1[i] + '</span>';
+    function renderSecret(selector, hideOdd) {
+      var arr = decoded.split("");
+      for (var i = 0; i < arr.length; i++) {
+        // hide odd if hideOdd=true, else hide even
+        if ((i % 2 === 0) === !hideOdd) {
+          arr[i] = '<span class="hidden">' + arr[i] + '</span>';
+        }
       }
+      document.querySelector(selector).innerHTML = arr.join("");
     }
-    document.querySelector('.secret1').innerHTML = arr1.join("");
 
-    // second layer: hide odd-indexed characters
-    var arr2 = decoded.split("");
-    for (var i = 0; i < arr2.length; i++) {
-      if (i % 2 !== 0) {
-        arr2[i] = '<span class="hidden">' + arr2[i] + '</span>';
-      }
-    }
-    document.querySelector('.secret2').innerHTML = arr2.join("");
-
-    // change title to grab attention
-    document.title = "🌙 Juna, your moment awaits…";
+    // populate both layers
+    renderSecret('.secret1', false);
+    renderSecret('.secret2', true);
   </script>
 </body>
 </html>
