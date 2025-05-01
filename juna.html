@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <!-- 1. Mobile-friendly viewport -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Secret Message For My Special One | Juna</title>
+  <title>Secret Message game - Juna</title>
 
   <!-- 2. Original fonts -->
   <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
@@ -72,7 +72,7 @@
       .secret { width: 90%; }
     }
 
-    /* — Playful pulsing cursor on hover — */
+    /* — Playful pulsing cursor on hover — 
     .secret:hover {
       cursor: url('data:image/svg+xml;utf8,\
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">\
@@ -84,13 +84,13 @@
     @keyframes heartbeat {
       0%,100% { transform: scale(1); }
       50%     { transform: scale(1.05); }
-    }
+    } */
   </style>
 </head>
 <body>
 
   <!-- Personal greeting -->
-  <div class="intro">💖 Hey Juna, only you can crack this… 💖</div>
+  <div class="intro">🔎 Hey Juna, up for a quick brain-teaser?</div>
 
   <!-- Scroll prompt -->
   <div class="codepen-title">💞 Scroll to reveal your secret message 🥰</div>
@@ -105,9 +105,9 @@
   <script>
     // 3. Your decoded secret message with call-to-action
     var decoded =
-      "Putu says don’t ask me anything! It’s none of your business! " +
-      "But in real life, Ranita. And finally, a chodna please mood off korisna re. " +
-      "[ P.S. If you cracked it, send me ONE word that describes your first thought! 💌 ]";
+      "Hey Juna, quick question: what sounds more fun to you - coffee at that new rooftop spot or chai by the lakeside?" +
+      "I'm planning my week and could use your expert opinion. May be we can try it together next week?" +
+      "[ P.S. If this gave you a grin, reply with your favourite emoji. 😊 ]";
 
     // 4. Render function: hides even or odd chars per layer
     function render(selector, hideEven) {
