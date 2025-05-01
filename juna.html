@@ -2,29 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- 1. Ensure true mobile responsiveness -->
+  <!-- Make it truly responsive -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Secret Message For My Special One | Juna</title>
 
-  <!-- 2. Your original fonts -->
+  <!-- Your original fonts -->
   <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Bangers&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Homemade+Apple&display=swap" rel="stylesheet">
 
   <style>
-    /* ————————————————————————————————————————————————
-       Base Styles
-    —————————————————————————————————————————————————— */
-    * { box-sizing: border-box; margin:0; padding:0; }
+    /* 1) Base & ensure secret2 scrolls with the page */
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
+      position: relative;                 /* 🔑 makes absolute children scroll */
+      overflow-x: hidden;
       background: #171720;
       color: #efefef;
       font-family: 'Cutive Mono', monospace;
-      font-size: 2rem;             /* your original size */
-      overflow-x: hidden;
+      font-size: 2rem;
     }
 
+    /* 2) Title styling */
     .codepen-title {
       font-family: 'Bangers', cursive;
       font-size: 4rem;
@@ -33,81 +33,77 @@
       padding: 50px 1rem 25px;
     }
 
-    /* ————————————————————————————————————————————————
-       Puzzle Layers
-    —————————————————————————————————————————————————— */
+    /* 3) Secret layers share this */
     .secret {
       white-space: pre-wrap;
       text-align: center;
       line-height: 1;
-      left: 50%;
-      transform: translateX(-50%);
+      max-width: 90%;
     }
 
-    /* Layer 1: hides even-indexed chars, fixed at viewport center */
+    /* 4) Layer 1: fixed in middle, hides even chars */
     .secret1 {
       position: fixed;
       top: 50vh;
+      left: 50%;
+      transform: translate(-50%, -50%);
       z-index: 1;
     }
 
-    /* Layer 2: hides odd-indexed chars, sits exactly 1 viewport below */
+    /* 5) Layer 2: absolute one screen down, hides odd chars */
     .secret2 {
       position: absolute;
-      top: 150vh;    /* 50vh (center) + 100vh (one full screen) */
+      top: 150vh;            /* 50vh center + 100vh scroll = 150vh */
+      left: 50%;
+      transform: translate(-50%, -50%);
       z-index: 2;
     }
 
-    .hidden {
-      color: transparent;
-    }
+    /* 6) Characters to hide */
+    .hidden { color: transparent; }
 
-    /* Enough scrollable space to trigger the overlap */
-    .content-placeholder {
-      height: 200vh;
-    }
+    /* 7) Big spacer so you can scroll exactly one screen */
+    .content-placeholder { height: 200vh; }
 
-    /* Mobile adjustments */
+    /* 8) Mobile tweaks */
     @media (max-width: 480px) {
-      body { font-size: 1.5rem; } /* slightly smaller so it fits */
-      .secret1, .secret2 { width: 90%; }
+      body { font-size: 1.5rem; }
+      .secret { width: 90%; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Title -->
   <div class="codepen-title">💞 Scroll to reveal your secret message 🥰</div>
 
-  <!-- Puzzle layer 1 -->
+  <!-- first half of puzzle -->
   <div class="secret secret1"></div>
-  <!-- Puzzle layer 2 -->
+  <!-- second half one viewport below -->
   <div class="secret secret2"></div>
 
-  <!-- filler to enable exactly one screen scroll -->
+  <!-- enough height to scroll -->
   <div class="content-placeholder"></div>
 
   <script>
-    // ——— Your direct, decoded secret message — no Base64 anymore
-    var decoded = 
-      "Putu says don’t ask me anything! It’s none of your business! "
-    + "But in real life, Ranita. And finally, a chodna please mood off korisna re.";
+    // Your actual secret, directly embedded
+    var decoded =
+      "Putu says don’t ask me anything! It’s none of your business! " +
+      "But in real life, Ranita. And finally, a chodna please mood off korisna re.";
 
-    // Render layer function: hide even (hideEven=true) or odd chars
+    // Render each layer: hideEven=true hides even-indexed chars
     function render(selector, hideEven) {
-      var arr = decoded.split("");
-      for (var i = 0; i < arr.length; i++) {
+      var chars = decoded.split("");
+      for (var i = 0; i < chars.length; i++) {
         if ((i % 2 === 0) === hideEven) {
-          arr[i] = '<span class="hidden">' + arr[i] + '</span>';
+          chars[i] = '<span class="hidden">' + chars[i] + '</span>';
         }
       }
-      document.querySelector(selector).innerHTML = arr.join("");
+      document.querySelector(selector).innerHTML = chars.join("");
     }
 
-    // Populate both layers
-    render('.secret1', true);  // hide even-index chars
-    render('.secret2', false); // hide odd-index chars
+    // Populate both puzzle layers
+    render('.secret1', true);   // hide evens
+    render('.secret2', false);  // hide odds
   </script>
-
 </body>
 </html>
