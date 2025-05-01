@@ -1,102 +1,100 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Secret Message For My Special One | Juna</title>
-  <link href="https://fonts.googleapis.com/css?family=Cutive+Mono" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Bangers" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Homemade+Apple" rel="stylesheet">
+  <!-- 1. Responsive viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🌙 Juna, your moment awaits…</title>
+  <!-- 2. One playful font + system UI stack -->
+  <link 
+    href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah&display=swap" 
+    rel="stylesheet">
+  <style>
+    /* 3. Base sizing & colors */
+    html { font-size: 16px; }
+    body {
+      margin: 0; padding: 0;
+      background: #171720; color: #efefef;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 1.25rem; line-height: 1.4;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    @media (max-width: 480px) {
+      body { font-size: 1.1rem; }
+    }
 
-<style>
-body {
-  background-color: #171720;
-  color: #efefef;
-  font-family: 'Cutive Mono', cursive;
-  font-size: 2rem;
-}
-body .secret {
-  line-height: 1;
-  text-align: center;
-}
-body .secret:nth-child(2) {
-  position: fixed;
-  z-index: -1;
-}
-body .secret:nth-child(3) {
-  position: absolute;
-  margin: 390px 0;
-}
+    /* 4. Title styling */
+    .codepen-title {
+      font-family: 'Gloria Hallelujah', cursive;
+      font-size: 2.5rem; text-align: center;
+      padding: 2rem 1rem; color: #e6c9fc;
+    }
 
-.hidden {
-  color: transparent;
-}
-
-.content-placeholder {
-  min-height: 500vh;
-}
-
-.codepen-title {
-  font-family: 'Bangers', cursive;
-  font-size: 4rem;
-  text-align: center;
-  padding: 50px 0;
-  margin-bottom: 25px;
-  color: #e6c9fc;
-}
-</style>
-
+    /* 5. Secret message container */
+    .secret {
+      font-family: 'Gloria Hallelujah', cursive;
+      font-size: 1.8rem; text-align: center;
+      max-width: 90%; min-height: 4rem;
+      white-space: pre-wrap;
+      margin: 2rem auto;
+    }
+  </style>
 </head>
-
 <body>
-<!-- partial:index.partial.html -->
-<div class="codepen-title">💞 Scroll to reveal your secret message 🥰</div>
-<div class="secret secret1"></div>
-<div class="secret secret2" id="scrollable_secret"></div>
-<div class="content-placeholder"></div>
-<!-- partial -->
 
-<script type="text/javascript">
-  var secretMessage = "UHV0dSBzYXlzIGRvbnQgYXNrIG1lIGFueXRoaW5nISBJdCdzIG5vbmUgb2YgeW91ciBidXNpbmVzcyEgQnV0IG15IG1pbmQgZm9ybWVkIGEgdGhvdWdodCwgYSBzZWNyZXQgbWVzc2FnZSB0byBjcmVhdGUuIEEgcHV6emxlIHRvIGFzc2VtYmxlLCBhbmQgc25lYWtpbHkgcmVsYXRlLCBiZWNhdXNlIG15IGhlYXJ0cyBzbyBmdWxsIHRoYXQgbXkgZmVlbGluZ3MgbXVzdCBlbGF0ZS4gU28sIHBsZWFzZSBkb24ndCBiZSBzYWQgUHV0dS4gWW91IGtub3cgd2hhdCB0aGVyZSBpcyBhbHdheXMgYSBjcmFjayBvZiBsaWdodCBpbiB0aGUgZGFya2Vuc3MuIEZpbmQgaXQuIERvbid0IGJlIHNhZCAmIGRvbid0IGdpdmUgdXAgb24geW91ciBkcmVhbXMgcGxlYXNlIFJhbml0YS4gRG9uJ3QgYmUgc2FkLCBCZSBoYXBweSBhbHdheXMhISBZb3UgY2FuIGRvIHRlcnJpYmxlIHRoaW5ncyBJIGtub3cgdGhhdCB2ZXJ5IHdlbGwuIFNvLCBwbGVhc2UgZm9jdXMgb24geW91ciBkcmVhbXMsIG1ha2Ugc29tZSBnb2Fscy4gQWZ0ZXJhbGwgeW91IGFsc28gZGVzZXJ2ZSBoYXBwaW5lc3MuIFlvdSBhcmUgaW1wZXJmZWN0bHkgcGVyZmVjdCBSYW5pdGEuIEJlIGFuIE9wdGltaXN0aWMgZ2lybCwgUmFuaXRhLiBBbmQgZmluYWxseSwgYSBjaG9kbmEgcGxlYXNlIG1vb2Qgb2ZmIGtvcmlzbmEgcmUuIA==";
+  <div class="codepen-title">
+    💞 Scroll or wait for your secret message 🥰
+  </div>
 
-  // Decode the secretMessage
-  var decodedString = atob(secretMessage);
-  console.log("Decoded: " + decodedString);
+  <div class="secret"> </div> <!-- will be filled/animated by JS -->
 
-  // First Div
-  // set the first secret
-  var secret1 = decodedString;
+  <div style="height:100vh;"></div> <!-- for scrolling tease -->
 
-  // split up the string by individual character, assign to an array
-  var secret1split = secret1.split("");
+  <script>
+  // === The raw secret, decoded ===
+  const raw = "Putu says don’t ask me anything! It’s none of your business! But in real life, Ranita. And finally, a chodna please mood off korisna re.";
 
-  // loop through each item in the array you made.  if the index of the item is even, add a span around it with class hidden
-  for (var i = 0; i < secret1split.length; i++) {
-    if(i%2==0){
-    secret1split[i] = '<span class="hidden">' + secret1split[i] + '</span>';
-    }
+  // === Simple “scramble → reveal” function ===
+  const letters = "!<>-_\\/[]{}—=+*^?#________";
+  const secretEl = document.querySelector('.secret');
+  let buffer = Array.from(raw).map(_ => "_");
+
+  function randomChar() {
+    return letters[Math.floor(Math.random() * letters.length)];
   }
 
-  // join your array back together, returns  string
-  var secretjoined = secret1split.join('');
-
-  // write this to the inner html of the div again
-  document.querySelector('.secret1').innerHTML = secretjoined;
-
-  // Second Div
-  // same as first div, but adding the span tag to all items with odd indexes
-  var secret2 = decodedString;
-
-  var secret2split = secret2.split("");
-
-  for (var i = 0; i < secret2split.length; i++) {
-    if(i%2!=0){
-    secret2split[i] = '<span class="hidden">' + secret2split[i] + '</span>';
-    }
+  function iterate() {
+    let done = true;
+    buffer = buffer.map((ch, i) => {
+      if (ch === raw[i]) return ch;
+      done = false;
+      // 20% chance to lock in correct char this frame
+      if (Math.random() < 0.2) return raw[i];
+      return randomChar();
+    });
+    secretEl.textContent = buffer.join("");
+    if (!done) requestAnimationFrame(iterate);
   }
 
-  var secret2joined = secret2split.join('');
-  document.querySelector('.secret2').innerHTML = secret2joined;
-</script>
+  // === Kick off on scroll or 1s timeout, whichever first ===
+  let started = false;
+  function start() {
+    if (started) return;
+    started = true;
+    iterate();
+  }
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) start();
+  });
+  setTimeout(start, 1000);
 
+  // === Title nudge if she switches tabs ===
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      document.title = "🌅 Welcome back, Juna…";
+      setTimeout(() => document.title = "🌙 Juna, your moment awaits…", 3000);
+    }
+  });
+  </script>
 </body>
 </html>
