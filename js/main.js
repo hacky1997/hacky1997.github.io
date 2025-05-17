@@ -18,23 +18,14 @@
       imgs.forEach(img => img.src = img.getAttribute('data-src'));
     }
 
-    // Typing effect with a single blinking cursor
+    // Typing effect
     const type = (id, next) => {
       const el = document.getElementById(id);
-      // Remove cursor from both spans
-      ['type-title', 'type-subtitle'].forEach(i =>
-        document.getElementById(i).classList.remove('cursor-active')
-      );
-      // Clear and add cursor class
+      ['type-title','type-subtitle'].forEach(i => document.getElementById(i).classList.remove('cursor-active'));
       el.textContent = '';
       el.classList.add('cursor-active');
-
       const txt = el.getAttribute('data-text') || '';
       let i = 0;
-      const speed = parseInt(
-        getComputedStyle(document.documentElement).getPropertyValue('--typing-speed')
-      ) || 100;
-
       const interval = setInterval(() => {
         el.textContent += txt.charAt(i);
         i++;
@@ -43,10 +34,20 @@
           el.classList.remove('cursor-active');
           if (next) next();
         }
-      }, speed);
+      }, parseInt(getComputedStyle(document.documentElement).getPropertyValue('--typing-speed')));
     };
-
-    // Kick off typing: title then subtitle
     type('type-title', () => type('type-subtitle'));
+
+    // Section visibility on scroll
+    const sections = document.querySelectorAll('.section');
+    const onScroll = () => {
+      sections.forEach(sec => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) sec.classList.add('visible');
+        else sec.classList.remove('visible');
+      });
+    };
+    window.addEventListener('scroll', onScroll);
+    onScroll();
   });
 })();
