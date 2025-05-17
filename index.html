@@ -16,9 +16,10 @@
 </head>
 <body>
   <main class="fullpage">
+
     <!-- Hero Section -->
-    <section class="section hero" id="hero" aria-label="Hero section: Introduction" onmousemove="requestAnimationFrame(() => document.querySelector('.particle-overlay').style.backgroundPosition = `${event.clientX/20}px ${event.clientY/20}px`)">
-      <div class="container">
+    <section class="section hero" id="hero" aria-label="Introduction">
+      <div class="hero-content">
         <h1 class="hero__title"><span id="type-title" data-text="Sayak Naskar"></span></h1>
         <p class="hero__subtitle"><span id="type-subtitle" data-text="QA Automation Engineer & Mentor"></span></p>
         <a href="#projects" class="btn btn--primary">Explore My Work</a>
@@ -75,8 +76,8 @@
       </div>
     </section>
 
-    <!-- Creative Contact Section -->
-    <section class="section contact" id="contact" role="region" aria-labelledby="contact-heading">
+    <!-- Contact Section -->
+    <footer class="section contact" id="contact" role="contentinfo" aria-labelledby="contact-heading">
       <div class="container">
         <h2 id="contact-heading">Thanks for stopping by!</h2>
         <p>Connect with me:</p>
@@ -87,10 +88,11 @@
         </div>
         <p class="footer-note">© Sayak Naskar 2025. All rights reserved.</p>
       </div>
-    </section>
+    </footer>
+
   </main>
 
-  <!-- Scripts -->
+  <!-- Script -->
   <script src="js/main.js"></script>
 </body>
 </html>
