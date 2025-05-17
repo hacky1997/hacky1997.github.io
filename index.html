@@ -88,18 +88,20 @@
   <!-- Hero Section -->
   <header class="hero" id="hero">
     <div class="container">
-      <h1 class="hero__title">Sayak Naskar</h1>
-      <p class="hero__subtitle">
+      <h1 class="hero__title animate-fade-in">Sayak Naskar</h1>
+      <p class="hero__subtitle animate-fade-in" style="animation-delay: 0.3s;">
         QA Automation Engineer &amp; Mentor<br>
         4.8 yrs driving 70% manual-effort reductions
       </p>
-      <a href="#projects" class="btn btn--primary">Explore My Work</a>
+      <a href="#projects" class="btn btn--primary animate-fade-in" style="animation-delay: 0.6s;">Explore My Work</a>
     </div>
+    <!-- Lightweight particle effect via CSS overlay -->
+    <div class="particle-overlay"></div>
   </header>
 
   <!-- About Section -->
   <section id="about" class="section about">
-    <div class="container">
+    <div class="container animate-slide-up">
       <h2>About Me</h2>
       <p>With nearly five years in QA automation—first at TCS, now at Deloitte USI—I've spearheaded frameworks that 
          slashed manual testing time by 70% and reduced release defects by 50%. 
@@ -114,20 +116,20 @@
 
   <!-- Projects Section -->
   <section id="projects" class="section projects">
-    <div class="container">
+    <div class="container animate-slide-up">
       <h2>Selected Projects</h2>
       <div class="grid">
-        <article class="card">
+        <article class="card animate-fade-in" style="animation-delay: 0.2s;">
           <img data-src="images/automation-suite-thumb.jpg" alt="Hybrid Automation Suite" />
           <h3>Hybrid Automation Suite</h3>
           <p>Java & Selenium framework boosting coverage by 35%.</p>
         </article>
-        <article class="card">
+        <article class="card animate-fade-in" style="animation-delay: 0.4s;">
           <img data-src="images/oracle-demo-thumb.jpg" alt="Smart Automation Demo" />
           <h3>Oracle Cloud World Demo</h3>
           <p>Showcased at Oracle Cloud World 2023.</p>
         </article>
-        <article class="card">
+        <article class="card animate-fade-in" style="animation-delay: 0.6s;">
           <img data-src="images/govt-portal-thumb.jpg" alt="Govt Portal PoC" />
           <h3>Govt Portal PoC</h3>
           <p>Achieved 30% test efficiency gain on public sector portal.</p>
@@ -138,7 +140,7 @@
 
   <!-- Blog Section -->
   <section id="blog" class="section blog">
-    <div class="container">
+    <div class="container animate-slide-up">
       <h2>Insights & Blog</h2>
       <ul class="posts">
         <li><a href="#">Optimizing Selenium for Scale</a> <time datetime="2025-04-10">Apr 10, 2025</time></li>
@@ -150,7 +152,7 @@
 
   <!-- Contact Section -->
   <section id="contact" class="section contact">
-    <div class="container">
+    <div class="container animate-slide-up">
       <h2>Contact Me</h2>
       <p>Email: <a href="mailto:sayaknaskar@gmail.com">sayaknaskar@gmail.com</a></p>
       <p>LinkedIn: <a href="https://linkedin.com/in/sayak-naskar" target="_blank" rel="noopener">linkedin.com/in/sayak-naskar</a></p>
@@ -159,7 +161,6 @@
   </section>
 
   <!-- Scripts -->
-  <script defer src="js/lazyload.min.js"></script>
   <script defer src="js/main.min.js"></script>
 </body>
 </html>
