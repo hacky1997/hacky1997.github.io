@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Sayak Naskar | QA Automation Engineer</title>
   <meta name="description" content="Sayak Naskar – QA Automation Engineer. 4.8 yrs driving 70% manual-effort reductions through robust test frameworks.">
 
@@ -14,75 +14,76 @@
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-
-  <!-- Hero Section -->
-  <header class="hero" id="hero">
-    <div class="container">
-      <h1 class="hero__title"><span id="type-title" data-text="Sayak Naskar"></span></h1>
-      <p class="hero__subtitle"><span id="type-subtitle" data-text="QA Automation Engineer & Mentor"></span></p>
-      <a href="#projects" class="btn btn--primary animate-fade-in" style="animation-delay: 1s;">Explore My Work</a>
-    </div>
-    <div class="particle-overlay"></div>
-  </header>
-
-  <!-- About Section -->
-  <section id="about" class="section about">
-    <div class="container animate-slide-up" style="animation-delay: 0.2s;">
-      <h2>About Me</h2>
-      <p>With nearly five years in QA automation—first at TCS, now at Deloitte USI—I’ve led frameworks that slashed manual testing time by 70% and halved release defects.</p>
-      <ul class="metrics">
-        <li><strong>70%</strong> Manual Effort ↓</li>
-        <li><strong>50%</strong> Release Defects ↓</li>
-        <li><strong>15+</strong> Bug Bounties Earned</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- Projects Section -->
-  <section id="projects" class="section projects">
-    <div class="container animate-slide-up" style="animation-delay: 0.4s;">
-      <h2>Selected Projects</h2>
-      <div class="grid">
-        <article class="card animate-fade-in" style="animation-delay: 0.2s;">
-          <img data-src="images/automation-suite-thumb.jpg" alt="Hybrid Automation Suite">
-          <h3>Hybrid Automation Suite</h3>
-          <p>Java & Selenium framework boosting coverage by 35%.</p>
-        </article>
-        <article class="card animate-fade-in" style="animation-delay: 0.4s;">
-          <img data-src="images/oracle-demo-thumb.jpg" alt="Oracle Cloud World Demo">
-          <h3>Oracle Cloud World Demo</h3>
-          <p>Showcased automation at Oracle Cloud World 2023.</p>
-        </article>
-        <article class="card animate-fade-in" style="animation-delay: 0.6s;">
-          <img data-src="images/govt-portal-thumb.jpg" alt="Govt Portal PoC">
-          <h3>Govt Portal PoC</h3>
-          <p>Achieved 30% test efficiency gain on a public sector portal.</p>
-        </article>
+  <main class="fullpage">
+    <!-- Hero Section -->
+    <section class="section hero" id="hero" onmousemove="requestAnimationFrame(() => document.querySelector('.particle-overlay').style.backgroundPosition = `${event.clientX/20}px ${event.clientY/20}px`)">
+      <div class="container">
+        <h1 class="hero__title"><span id="type-title" data-text="Sayak Naskar"></span></h1>
+        <p class="hero__subtitle"><span id="type-subtitle" data-text="QA Automation Engineer & Mentor"></span></p>
+        <a href="#projects" class="btn btn--primary">Explore My Work</a>
       </div>
-    </div>
-  </section>
+      <div class="particle-overlay"></div>
+    </section>
 
-  <!-- Blog Section -->
-  <section id="blog" class="section blog">
-    <div class="container animate-slide-up" style="animation-delay: 0.6s;">
-      <h2>Insights & Blog</h2>
-      <ul class="posts">
-        <li><a href="#">Optimizing Selenium for Scale</a> <time datetime="2025-04-10">Apr 10, 2025</time></li>
-        <li><a href="#">CI/CD Best Practices in QA</a> <time datetime="2025-03-15">Mar 15, 2025</time></li>
-        <li><a href="#">Writing Maintainable Test Suites</a> <time datetime="2025-02-20">Feb 20, 2025</time></li>
-      </ul>
-    </div>
-  </section>
+    <!-- About Section -->
+    <section class="section about" id="about">
+      <div class="container">
+        <h2>About Me</h2>
+        <p>With nearly five years in QA automation—first at TCS, now at Deloitte USI—I’ve led frameworks that slashed manual testing time by 70% and halved release defects.</p>
+        <ul class="metrics">
+          <li><strong>70%</strong> Manual Effort ↓</li>
+          <li><strong>50%</strong> Release Defects ↓</li>
+          <li><strong>15+</strong> Bug Bounties Earned</li>
+        </ul>
+      </div>
+    </section>
 
-  <!-- Contact Section -->
-  <section id="contact" class="section contact">
-    <div class="container animate-slide-up" style="animation-delay: 0.8s;">
-      <h2>Contact Me</h2>
-      <p>Email: <a href="mailto:sayaknaskar@gmail.com">sayaknaskar@gmail.com</a></p>
-      <p>LinkedIn: <a href="https://linkedin.com/in/sayak-naskar" target="_blank" rel="noopener">linkedin.com/in/sayak-naskar</a></p>
-      <p>GitHub: <a href="https://github.com/hacky1997" target="_blank" rel="noopener">github.com/hacky1997</a></p>
-    </div>
-  </section>
+    <!-- Projects Section -->
+    <section class="section projects" id="projects">
+      <div class="container">
+        <h2>Selected Projects</h2>
+        <div class="grid">
+          <article class="card">
+            <img data-src="images/automation-suite-thumb.jpg" alt="Hybrid Automation Suite">
+            <h3>Hybrid Automation Suite</h3>
+            <p>Java & Selenium framework boosting coverage by 35%.</p>
+          </article>
+          <article class="card">
+            <img data-src="images/oracle-demo-thumb.jpg" alt="Oracle Cloud World Demo">
+            <h3>Oracle Cloud World Demo</h3>
+            <p>Showcased automation at Oracle Cloud World 2023.</p>
+          </article>
+          <article class="card">
+            <img data-src="images/govt-portal-thumb.jpg" alt="Govt Portal PoC">
+            <h3>Govt Portal PoC</h3>
+            <p>Achieved 30% test efficiency gain on a public sector portal.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="section blog" id="blog">
+      <div class="container">
+        <h2>Insights & Blog</h2>
+        <ul class="posts">
+          <li><a href="#">Optimizing Selenium for Scale</a> <time datetime="2025-04-10">Apr 10, 2025</time></li>
+          <li><a href="#">CI/CD Best Practices in QA</a> <time datetime="2025-03-15">Mar 15, 2025</time></li>
+          <li><a href="#">Writing Maintainable Test Suites</a> <time datetime="2025-02-20">Feb 20, 2025</time></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section contact" id="contact">
+      <div class="container">
+        <h2>Contact Me</h2>
+        <p>Email: <a href="mailto:sayaknaskar@gmail.com">sayaknaskar@gmail.com</a></p>
+        <p>LinkedIn: <a href="https://linkedin.com/in/sayak-naskar" target="_blank" rel="noopener">linkedin.com/in/sayak-naskar</a></p>
+        <p>GitHub: <a href="https://github.com/hacky1997" target="_blank" rel="noopener">github.com/hacky1997</a></p>
+      </div>
+    </section>
+  </main>
 
   <!-- Scripts -->
   <script src="js/main.js"></script>
