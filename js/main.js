@@ -18,13 +18,13 @@
       imgs.forEach(img => img.src = img.dataset.src);
     }
 
-    // Typing effect single cursor
+    // Typing effect with single cursor
     const type = (id, next) => {
       const el = document.getElementById(id);
       ['type-title','type-subtitle'].forEach(i => document.getElementById(i).classList.remove('cursor-active'));
       el.textContent = '';
       el.classList.add('cursor-active');
-      const txt = el.dataset.text || '';
+      const txt = el.dataset-text;
       let i = 0;
       const interval = setInterval(() => {
         el.textContent += txt.charAt(i);
