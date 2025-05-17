@@ -17,7 +17,7 @@
 <body>
   <main class="fullpage">
     <!-- Hero Section -->
-    <section class="section hero" id="hero" onmousemove="requestAnimationFrame(() => document.querySelector('.particle-overlay').style.backgroundPosition = `${event.clientX/20}px ${event.clientY/20}px`)">
+    <section class="section hero" id="hero" aria-label="Hero section: Introduction" onmousemove="requestAnimationFrame(() => document.querySelector('.particle-overlay').style.backgroundPosition = `${event.clientX/20}px ${event.clientY/20}px`)">
       <div class="container">
         <h1 class="hero__title"><span id="type-title" data-text="Sayak Naskar"></span></h1>
         <p class="hero__subtitle"><span id="type-subtitle" data-text="QA Automation Engineer & Mentor"></span></p>
@@ -27,9 +27,9 @@
     </section>
 
     <!-- About Section -->
-    <section class="section about" id="about">
+    <section class="section about" id="about" role="region" aria-labelledby="about-heading">
       <div class="container">
-        <h2>About Me</h2>
+        <h2 id="about-heading">About Me</h2>
         <p>With nearly five years in QA automation—first at TCS, now at Deloitte USI—I’ve led frameworks that slashed manual testing time by 70% and halved release defects.</p>
         <ul class="metrics">
           <li><strong>70%</strong> Manual Effort ↓</li>
@@ -40,9 +40,9 @@
     </section>
 
     <!-- Projects Section -->
-    <section class="section projects" id="projects">
+    <section class="section projects" id="projects" role="region" aria-labelledby="projects-heading">
       <div class="container">
-        <h2>Selected Projects</h2>
+        <h2 id="projects-heading">Selected Projects</h2>
         <div class="grid">
           <article class="card">
             <img data-src="images/automation-suite-thumb.jpg" alt="Hybrid Automation Suite">
@@ -64,9 +64,9 @@
     </section>
 
     <!-- Blog Section -->
-    <section class="section blog" id="blog">
+    <section class="section blog" id="blog" role="region" aria-labelledby="blog-heading">
       <div class="container">
-        <h2>Insights & Blog</h2>
+        <h2 id="blog-heading">Insights & Blog</h2>
         <ul class="posts">
           <li><a href="#">Optimizing Selenium for Scale</a> <time datetime="2025-04-10">Apr 10, 2025</time></li>
           <li><a href="#">CI/CD Best Practices in QA</a> <time datetime="2025-03-15">Mar 15, 2025</time></li>
@@ -75,13 +75,17 @@
       </div>
     </section>
 
-    <!-- Contact Section -->
-    <section class="section contact" id="contact">
+    <!-- Creative Contact Section -->
+    <section class="section contact" id="contact" role="region" aria-labelledby="contact-heading">
       <div class="container">
-        <h2>Contact Me</h2>
-        <p>Email: <a href="mailto:sayaknaskar@gmail.com">sayaknaskar@gmail.com</a></p>
-        <p>LinkedIn: <a href="https://linkedin.com/in/sayak-naskar" target="_blank" rel="noopener">linkedin.com/in/sayak-naskar</a></p>
-        <p>GitHub: <a href="https://github.com/hacky1997" target="_blank" rel="noopener">github.com/hacky1997</a></p>
+        <h2 id="contact-heading">Thanks for stopping by!</h2>
+        <p>Connect with me:</p>
+        <div class="social-icons">
+          <a href="mailto:sayaknaskar@gmail.com" aria-label="Email"><img src="icons/mail.svg" alt="Email icon"></a>
+          <a href="https://linkedin.com/in/sayak-naskar" target="_blank" rel="noopener" aria-label="LinkedIn"><img src="icons/linkedin.svg" alt="LinkedIn icon"></a>
+          <a href="https://github.com/hacky1997" target="_blank" rel="noopener" aria-label="GitHub"><img src="icons/github.svg" alt="GitHub icon"></a>
+        </div>
+        <p class="footer-note">© Sayak Naskar 2025. All rights reserved.</p>
       </div>
     </section>
   </main>
