@@ -340,51 +340,51 @@ document.getElementById('check1').addEventListener('click', ()=>{
 //   createPuzzle();
 // });
 
-  /* --- Stage 2: Memory Tile (REPLACE your existing Stage 2 block with this) --- */
+/* ---------- DROP-IN Stage 2: Memory Tile (replace existing Stage 2 block) ---------- */
 const puzzleWrap = document.getElementById('puzzleWrap');
 let puzzleRows = 2, puzzleCols = 3;
-let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your photo
+let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your image
 let pieces = [];
 let selPiece = null;
+
+function fmtBgPos(col, row){
+  // returns normalized background position string like "-0% -0%"
+  const x = (-(col * 100) / (puzzleCols - 1));
+  const y = (-(row * 100) / (puzzleRows - 1));
+  // keep consistent formatting
+  return `${Number(x.toFixed(4))}% ${Number(y.toFixed(4))}%`;
+}
 
 function createPuzzle(){
   pieces = [];
   puzzleWrap.innerHTML = '';
   const total = puzzleRows * puzzleCols;
-
   for(let i = 0; i < total; i++){
     const box = document.createElement('div');
-    box.className = 'tile'; // keeps your visual styles
+    box.className = 'tile';
     box.style.width = '120px';
     box.style.height = '80px';
     box.style.backgroundImage = `url(${puzzleImg})`;
-
     const col = i % puzzleCols;
     const row = Math.floor(i / puzzleCols);
-
     box.style.backgroundSize = `${puzzleCols * 100}% ${puzzleRows * 100}%`;
-    box.style.backgroundPosition = `${-(col * 100) / (puzzleCols - 1)}% ${-(row * 100) / (puzzleRows - 1)}%`;
-
+    box.style.backgroundPosition = fmtBgPos(col, row);
     box.style.borderRadius = '6px';
     box.style.cursor = 'pointer';
     box.style.transition = 'transform .18s ease';
-
     // store the original/correct position for this piece
     box.dataset.correctIndex = String(i);
-
-    // click handler uses DOM swapping (keeps DOM order in sync with visuals)
+    // attach click handler
     box.addEventListener('click', onPieceClick);
-
     pieces.push(box);
   }
-
-  // shuffle and append to DOM (DOM order is the current order)
+  // shuffle DOM order and append (DOM order = current order)
   const shuffled = shuffleArray(pieces.slice());
   shuffled.forEach(p => puzzleWrap.appendChild(p));
 }
 createPuzzle();
 
-/* click to select first piece, click second piece to swap (DOM swap) */
+// click-to-select, then click another to swap (swaps DOM nodes)
 function onPieceClick(e){
   const node = e.currentTarget;
   if (!selPiece) {
@@ -397,23 +397,22 @@ function onPieceClick(e){
     selPiece = null;
     return;
   }
-
-  // swap DOM nodes (visual and DOM positions swap together)
+  // swap DOM nodes (visual + DOM order swap together)
   swapNodes(selPiece, node);
-
   selPiece.style.outline = '';
   selPiece = null;
 }
 
-/* reliable DOM swap function */
 function swapNodes(a, b){
-  const parent = a.parentNode;
-  const aNext = (a.nextSibling === b) ? a : a.nextSibling;
-  parent.insertBefore(a, b);
-  parent.insertBefore(b, aNext);
+  const pa = a.parentNode;
+  const pb = b.parentNode;
+  if (!pa || !pb) return;
+  const aNext = a.nextSibling === b ? a : a.nextSibling;
+  pa.insertBefore(a, b);
+  pa.insertBefore(b, aNext);
 }
 
-/* shuffle uses current DOM children (robust) */
+/* Shuffle: randomize the DOM children */
 document.getElementById('shuffle2').addEventListener('click', () => {
   const nodes = Array.from(puzzleWrap.children);
   const shuffled = shuffleArray(nodes);
@@ -421,32 +420,68 @@ document.getElementById('shuffle2').addEventListener('click', () => {
   shuffled.forEach(n => puzzleWrap.appendChild(n));
 });
 
-/* reset recreates puzzle cleanly */
+/* Reset: rebuild puzzle fresh */
 document.getElementById('reset2').addEventListener('click', () => {
   createPuzzle();
 });
 
-/* check: verify that each DOM child holds the piece that belongs to that slot */
+/* Check: verify each DOM child is the piece that belongs at that slot */
 document.getElementById('check2').addEventListener('click', () => {
   const children = Array.from(puzzleWrap.children);
-  const correct = children.every((child, idx) => parseInt(child.dataset.correctIndex, 10) === idx);
+  // primary: compare dataset.correctIndex with DOM index
+  const byIndex = children.every((child, idx) => {
+    return (typeof child.dataset.correctindex !== 'undefined') && (Number(child.dataset.correctIndex) === idx);
+  });
 
-  if (correct) {
+  if (byIndex) {
+    // solved: proceed to next stage
     stage2.classList.remove('active');
     stage3.classList.add('active');
     solvedStages++;
-    // replace alert with a nicer in-page reveal if you used showMemory()
     if (typeof showMemory === 'function') {
       showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
     } else {
       alert('Memory unlocked: "That evening by the park"');
     }
-  } else {
-    shake(puzzleWrap);
-    alert('Looks close—try to get the photo pieces in order.');
+    return;
   }
+
+  // fallback: sometimes dataset may exist but DOM index mismatch due to whitespace nodes;
+  // double-check by comparing normalized backgroundPosition to expected position for slot
+  const posMatches = children.every((child, idx) => {
+    const actual = (child.style.backgroundPosition || '').trim();
+    // compute expected based on idx
+    const col = idx % puzzleCols;
+    const row = Math.floor(idx / puzzleCols);
+    const expected = fmtBgPos(col, row);
+    // numeric-tolerant compare
+    const parsePos = s => s.split(/\s+/).map(v => Number(v.replace('%','')));
+    const a = parsePos(actual);
+    const e = parsePos(expected);
+    if (a.length !== 2 || e.length !==2 || a.some(isNaN) || e.some(isNaN)) return false;
+    return (Math.abs(a[0]-e[0]) <= 0.6 && Math.abs(a[1]-e[1]) <= 0.6);
+  });
+
+  if (posMatches) {
+    stage2.classList.remove('active');
+    stage3.classList.add('active');
+    solvedStages++;
+    if (typeof showMemory === 'function') {
+      showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
+    } else {
+      alert('Memory unlocked: "That evening by the park"');
+    }
+    return;
+  }
+
+  // not solved
+  shake(puzzleWrap);
+  alert('Looks close—try to get the photo pieces in order.');
 });
 
+/* utility helpers */
+function shuffleArray(a){ return a.slice().sort(()=>Math.random()-0.5); }
+function shake(el){ el.style.transition='transform .06s'; el.style.transform='translateX(-6px)'; setTimeout(()=>el.style.transform='translateX(6px)',80); setTimeout(()=>el.style.transform='translateX(0)',160); setTimeout(()=>el.style.transition='',240); }
 
 /* --- Stage 3: Final arrange sentence --- */
 const finalTiles = document.getElementById('finalTiles');
