@@ -241,12 +241,14 @@ document.getElementById('check1').addEventListener('click', ()=>{
 });
 
 /* ---------- Stage 2: Manual slot-based puzzle ---------- */
+/* ---------- Stage 2: Manual slot-based puzzle ---------- */
 const puzzleWrap = document.getElementById('puzzleWrap');
 let puzzleRows = 2, puzzleCols = 3;
 let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your image
 let pieceWidth = 120, pieceHeight = 80;
 let bankContainer, slotsContainer;
 let selectedPiece = null;
+let correctPositions = []; // <-- store the correct background-positions
 
 function createPuzzle() {
   puzzleWrap.innerHTML = '';
@@ -255,6 +257,8 @@ function createPuzzle() {
   slotsContainer = document.createElement('div');
   slotsContainer.className = 'slot-grid';
   slotsContainer.style.gridTemplateColumns = `repeat(${puzzleCols}, ${pieceWidth}px)`;
+
+  correctPositions = []; // reset for each puzzle creation
 
   const total = puzzleRows * puzzleCols;
   // create slots
@@ -279,10 +283,15 @@ function createPuzzle() {
     const row = Math.floor(i / puzzleCols);
     piece.style.backgroundImage = `url(${puzzleImg})`;
     piece.style.backgroundSize = `${puzzleCols * 100}% ${puzzleRows * 100}%`;
-    // background-position like earlier (percent values)
+
+    // store exact background-position
     const x = (-(col * 100) / (puzzleCols - 1)) + '%';
     const y = (-(row * 100) / (puzzleRows - 1)) + '%';
     piece.style.backgroundPosition = `${x} ${y}`;
+
+    // save this position in the correctPositions array
+    correctPositions.push(`${x} ${y}`);
+
     piece.draggable = true;
     piece.addEventListener('dragstart', (ev) => {
       ev.dataTransfer.setData('text/plain', piece.id);
@@ -315,19 +324,15 @@ function placePieceInSlot(piece, slot) {
   const existing = slot.querySelector('.tile-piece');
 
   if (existing && existing !== piece) {
-    // swap: put existing back into source parent (if source was slot move it there, else move to bank)
     const sourceSlot = currentParent && currentParent.classList && currentParent.classList.contains('slot-cell') ? currentParent : null;
     if (sourceSlot) {
-      // swap positions between slots
       sourceSlot.appendChild(existing);
       slot.replaceChild(piece, existing);
     } else {
-      // piece came from bank: move existing back to bank, put piece into slot
       bankContainer.appendChild(existing);
       slot.appendChild(piece);
     }
   } else {
-    // empty slot — just append piece
     slot.appendChild(piece);
   }
   selectedPiece = null;
@@ -344,7 +349,6 @@ function onDropToSlot(e) {
 }
 
 function onPieceClick(piece) {
-  // select the piece (toggle)
   if (selectedPiece === piece) {
     selectedPiece = null;
   } else {
@@ -358,7 +362,6 @@ function onSlotClick(slot) {
     placePieceInSlot(selectedPiece, slot);
     return;
   }
-  // if no selected piece, clicking a slot will pick its piece (if any)
   const existing = slot.querySelector('.tile-piece');
   if (existing) {
     selectedPiece = existing;
@@ -367,20 +370,16 @@ function onSlotClick(slot) {
 }
 
 function updateSelectedVisual() {
-  // clear all
   document.querySelectorAll('.tile-piece').forEach(p => p.classList.toggle('selected', p === selectedPiece));
 }
 
 // public controls:
 document.getElementById('shuffle2').addEventListener('click', () => {
-  // gather all pieces back to bank and shuffle
   const pieces = Array.from(document.querySelectorAll('.tile-piece'));
-  // clear slots
   Array.from(slotsContainer.children).forEach(slot => {
     const child = slot.querySelector('.tile-piece');
     if (child) bankContainer.appendChild(child);
   });
-  // shuffle order in bank
   const shuffled = shuffleArray(pieces);
   bankContainer.innerHTML = '';
   shuffled.forEach(p => bankContainer.appendChild(p));
@@ -393,183 +392,21 @@ document.getElementById('reset2').addEventListener('click', () => {
 });
 
 document.getElementById('check2').addEventListener('click', () => {
-  /* ---------- helper: parse a background-position string like "-50% 0%" -> [-50, 0] ---------- */
-function parseBgPos(pos){
-  if(!pos || typeof pos !== 'string') return null;
-  const pct = pos.match(/-?\d+(\.\d+)?%/g);
-  if(pct && pct.length >= 2){
-    return [ parseFloat(pct[0]), parseFloat(pct[1]) ];
-  }
-  const nums = pos.match(/-?\d+(\.\d+)?/g);
-  if(nums && nums.length >= 2) return [ parseFloat(nums[0]), parseFloat(nums[1]) ];
-  return null;
-}
-
-/* ---------- helper: small debug overlay (non-intrusive) ---------- */
-function showPuzzleReport(lines){
-  const id = 'puzzleReport';
-  let report = document.getElementById(id);
-  if(!lines || lines.length === 0){
-    if(report) report.remove();
-    return;
-  }
-  if(!report){
-    report = document.createElement('pre');
-    report.id = id;
-    Object.assign(report.style, {
-      position: 'fixed',
-      right: '12px',
-      top: '12px',
-      maxWidth: '420px',
-      zIndex: 99999,
-      background: 'rgba(0,0,0,0.78)',
-      color: '#fff',
-      padding: '10px',
-      borderRadius: '8px',
-      fontSize: '12px',
-      lineHeight: '1.3',
-      whiteSpace: 'pre-wrap',
-      boxShadow: '0 6px 18px rgba(0,0,0,0.5)'
-    });
-    document.body.appendChild(report);
-  }
-  report.textContent = lines.join('\n');
-}
-
-/* ---------- NEW check2 handler: validate by visual rows using 'got' background-position values ---------- */
-document.getElementById('check2').addEventListener('click', () => {
-  const slots = Array.from(slotsContainer.children);           // DOM slots (order may differ from visual)
-  const total = slots.length;
-  if (total === 0) { showPuzzleReport(['No slots found']); return; }
-
-  // ---------- 1) compute visual order (top → left)
-  const rects = slots.map(s => ({ el: s, r: s.getBoundingClientRect() }));
-  // row tolerance in pixels (half typical height or at least 6px)
-  const heights = rects.map(x => x.r.height).sort((a,b) => a-b);
-  const medianH = heights.length ? heights[Math.floor(heights.length/2)] : 0;
-  const rowTolPx = Math.max(6, medianH / 2);
-
-  const sortedByVisual = rects.slice().sort((A, B) => {
-    if (Math.abs(A.r.top - B.r.top) > rowTolPx) return A.r.top - B.r.top;
-    return A.r.left - B.r.left;
-  }).map(x => x.el);
-
-  // chunk into visual rows (left→right)
-  const rows = [];
-  for (let r = 0; r < puzzleRows; r++) {
-    rows.push(sortedByVisual.slice(r * puzzleCols, (r + 1) * puzzleCols));
-  }
-
-  // ---------- 2) expected X positions for columns (percent)
-  const expectedXs = [];
-  for (let c = 0; c < puzzleCols; c++){
-    expectedXs.push( Number((-(c * 100) / Math.max(1, (puzzleCols - 1))).toFixed(4)) );
-  }
-
-  // ---------- 3) per-row checks using 'got' values
-  const tol = 2.5;      // percent tolerance for comparing positions
-  const yTol = 6.0;     // px tolerance for row Y consistency
-  const mismatches = [];
-  const debugLines = [];
-
-  rows.forEach((rowSlots, rowIdx) => {
-    // gather got positions for each cell in this visual row
-    const gotPos = rowSlots.map((slot, colIdx) => {
-      const p = slot.querySelector('.tile-piece');
-      if (!p) return null;
-      return parseBgPos(window.getComputedStyle(p).backgroundPosition);
-    });
-
-    debugLines.push(`Row ${rowIdx} positions (left→right): ${gotPos.map(g => g ? `${g[0]}%,${g[1]}%` : 'empty').join(' | ')}`);
-
-    // 3a) ensure row is filled
-    for (let c = 0; c < puzzleCols; c++){
-      if (!gotPos[c]) {
-        mismatches.push(`row ${rowIdx} col ${c}: empty`);
-      }
-    }
-    if (mismatches.length) return; // skip detailed checks if empty found
-
-    // 3b) ensure Y's are consistent for the row (all pieces actually belong to same visual row)
-    const rowRects = rowSlots.map(s => s.getBoundingClientRect());
-    const meanTop = rowRects.reduce((a,b)=>a+b.top, 0) / rowRects.length;
-    for (let c = 0; c < rowRects.length; c++){
-      if (Math.abs(rowRects[c].top - meanTop) > rowTolPx) {
-        // if the slot's top differs substantially we mark it — but usually rowTolPx is generous
-        mismatches.push(`row ${rowIdx} col ${c}: slot vertical misalignment`);
-      }
-    }
-    if (mismatches.length) return;
-
-    // 3c) check left→right order by comparing X values: left cell should have larger X (e.g., 0%) than the one to its right (-50%, -100%)
-    for (let c = 0; c < puzzleCols - 1; c++){
-      const A = gotPos[c][0];   // percent e.g. 0 or -50 or -100
-      const B = gotPos[c+1][0];
-      // require A >= B (with small tolerance); if swapped, A will be smaller than B
-      if ( (A + tol) < B ) { // means A << B, so ordering wrong
-        mismatches.push(`row ${rowIdx} cols ${c}↔${c+1}: left got ${A}% should be >= right ${B}% (swap detected)`);
-      }
-    }
-
-    // 3d) optional: check Y percent matches expected row Y (if you want strict vertical matching)
-    const expectedY = Number((-(rowIdx * 100) / Math.max(1, (puzzleRows - 1))).toFixed(4));
-    const gotYs = gotPos.map(g => g[1]);
-    for (let c = 0; c < gotYs.length; c++) {
-      if (Math.abs(gotYs[c] - expectedY) > (tol * 1.5)) {
-        // we don't fail the whole puzzle for small Y percent differences — just warn in debug
-        debugLines.push(`row ${rowIdx} col ${c}: Y-percent ${gotYs[c]}% differs from expected ${expectedY}%`);
-      }
-    }
-  }); // end rows.forEach
-
-  // ---------- 4) success / debug reporting ----------
-  if (mismatches.length === 0) {
-    // solved
-    stage2.classList.remove('active');
-    stage3.classList.add('active');
-    solvedStages++;
-    if (typeof showMemory === 'function') {
-      showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
-    }
-    document.getElementById('puzzleHint').textContent = 'Memory unlocked — proceed to the final stage.';
-    showPuzzleReport([]); // clear any previous debug
-    console.log('puzzle debug OK:', debugLines);
-    return;
-  }
-
-  // not solved: show debug overlay with the 'got' values and mismatches
-  const lines = ['Not solved — mismatch summary (visual-order check):', '', ...debugLines, '', 'Problems: ', ...mismatches];
-  showPuzzleReport(lines);
-  shake(slotsContainer);
-  document.getElementById('puzzleHint').textContent = 'Not quite — see debug box (uses your visual "got" placements).';
-  console.log('puzzle debug mismatches:', mismatches);
-});
-
-  // compare background positions
-  const mismatches = [];
-  slots.forEach((slot, domIndex) => {
+  const total = puzzleRows * puzzleCols;
+  let ok = true;
+  for (let i = 0; i < total; i++) {
+    const slot = slotsContainer.children[i];
     const piece = slot.querySelector('.tile-piece');
-    if (!piece) {
-      mismatches.push(`slot ${domIndex}: empty`);
-      return;
+    if (!piece) { ok = false; break; }
+    const currentPos = piece.style.backgroundPosition.trim();
+    const correctPos = correctPositions[i].trim();
+    if (currentPos !== correctPos) {
+      ok = false;
+      break;
     }
-    const visIndex = sortedSlots.indexOf(slot);
-    const exp = expected[visIndex];
+  }
 
-    const bgPos = window.getComputedStyle(piece).backgroundPosition.split(' ');
-    const got = [
-      parseFloat(bgPos[0]),
-      parseFloat(bgPos[1])
-    ];
-
-    if (isNaN(got[0]) || isNaN(got[1]) ||
-        Math.abs(got[0] - exp[0]) > tol ||
-        Math.abs(got[1] - exp[1]) > tol) {
-      mismatches.push(`slot ${domIndex} (visual ${visIndex}): got ${bgPos.join(', ')} expected ${exp.join(', ')}%`);
-    }
-  });
-
-  if (mismatches.length === 0) {
+  if (ok) {
     stage2.classList.remove('active');
     stage3.classList.add('active');
     solvedStages++;
@@ -579,13 +416,13 @@ document.getElementById('check2').addEventListener('click', () => {
     document.getElementById('puzzleHint').textContent = 'Memory unlocked — proceed to the final stage.';
   } else {
     shake(slotsContainer);
-    document.getElementById('puzzleHint').textContent = 'Not quite — check the debug box (visual order applied).';
-    console.log('Mismatch summary:', mismatches);
+    document.getElementById('puzzleHint').textContent = 'Not quite — try rearranging the pieces in order.';
   }
 });
 
 // initialize puzzle on load
 createPuzzle();
+
 
 /* ---------- helpers for Stage2 visual check (add these just before the new check2 handler) ---------- */
 function parseBgPos(pos){
