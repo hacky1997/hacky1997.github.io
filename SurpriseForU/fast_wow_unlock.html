@@ -73,6 +73,14 @@
     .content{flex-direction:column}
     .right{width:100%}
   }
+
+  /* puzzle-specific */
+  .slot-grid{display:grid;gap:8px;justify-content:center;margin:6px 0;}
+  .slot-cell{border-radius:6px;border:2px dashed rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;min-width:120px;min-height:80px;background:transparent}
+  .pieces-bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+  .tile-piece{width:120px;height:80px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);background-size:cover;background-position:center;cursor:grab}
+  .tile-piece.selected{outline:2px solid rgba(255,107,129,0.2)}
+  .small-hint{color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
 </style>
 </head>
 <body>
@@ -102,13 +110,17 @@
         <!-- Stage 2 -->
         <div class="panel stage" id="stage2" style="margin-top:12px">
           <div style="font-weight:700">Stage 2 — Memory Tile</div>
-          <div style="margin-top:8px;color:var(--muted)">Piece the photo together — it's one of our moments.</div>
-          <div id="puzzleWrap" style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center"></div>
+          <div style="margin-top:8px;color:var(--muted)">Piece the photo together — drag pieces into the slots below in the right order.</div>
+
+          <!-- puzzle container: slots + bank will be created by JS -->
+          <div id="puzzleWrap" style="margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:10px;"></div>
+
           <div class="actions" style="justify-content:center;margin-top:10px">
             <button id="shuffle2">Shuffle</button>
             <button class="ghost" id="reset2">Reset</button>
             <button id="check2">Check</button>
           </div>
+          <div class="small-hint" id="puzzleHint">Tip: Drag a tile to a slot, or click a tile then click a slot to place it. Drop onto an occupied slot to swap.</div>
         </div>
 
         <!-- Stage 3 -->
@@ -166,7 +178,11 @@
 </div>
 
 <script>
-/* --- Stage 1: Scramble --- */
+/* --- Common helpers (single copies) --- */
+function shuffleArray(a){ return a.slice().sort(()=>Math.random()-0.5); }
+function shake(el){ if(!el) return; el.style.transition='transform .06s'; el.style.transform='translateX(-6px)'; setTimeout(()=>el.style.transform='translateX(6px)',80); setTimeout(()=>el.style.transform='translateX(0)',160); setTimeout(()=>el.style.transition='',240); }
+
+/* --- Stage references --- */
 const stage1 = document.getElementById('stage1');
 const stage2 = document.getElementById('stage2');
 const stage3 = document.getElementById('stage3');
@@ -177,7 +193,7 @@ const bgMusic = document.getElementById('bgMusic');
 
 let solvedStages = 0;
 
-// Stage1 word
+/* --- Stage 1: Scramble --- */
 const word1 = "Pinkiee";
 let tiles1 = shuffleArray(word1.split(''));
 const scrambleEl = document.getElementById('scramble1');
@@ -195,12 +211,11 @@ function renderScramble(){
 }
 renderScramble();
 
-// allow drop to reorder by click - simple mechanic: click to select, click target to swap
 let selectedTile = null;
 scrambleEl.addEventListener('click', (e)=>{
   if(!e.target.classList.contains('tile')) return;
   if(selectedTile===null){ selectedTile=e.target; selectedTile.style.outline='2px solid rgba(255,255,255,0.12)'; }
-  else { // swap text
+  else {
     const tmp = selectedTile.textContent;
     selectedTile.textContent = e.target.textContent;
     e.target.textContent = tmp;
@@ -216,7 +231,6 @@ document.getElementById('hint1').addEventListener('click', ()=>{
 document.getElementById('check1').addEventListener('click', ()=>{
   const cur = Array.from(scrambleEl.children).map(n=>n.textContent).join('');
   if(cur===word1){
-    // proceed
     stage1.classList.remove('active');
     stage2.classList.add('active');
     solvedStages++;
@@ -226,256 +240,192 @@ document.getElementById('check1').addEventListener('click', ()=>{
   }
 });
 
-/* ---------- Stage 2: Memory Tile (DROP-IN REPLACEMENT) ---------- */
+/* ---------- Stage 2: Manual slot-based puzzle ---------- */
 const puzzleWrap = document.getElementById('puzzleWrap');
 let puzzleRows = 2, puzzleCols = 3;
-let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your image (kept exactly)
-let pieces = [];
-let selPiece = null;
+let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your image
+let pieceWidth = 120, pieceHeight = 80;
+let bankContainer, slotsContainer;
+let selectedPiece = null;
 
-function fmtBgPos(col, row){
-  const x = (-(col * 100) / (puzzleCols - 1));
-  const y = (-(row * 100) / (puzzleRows - 1));
-  return `${Number(x.toFixed(4))}% ${Number(y.toFixed(4))}%`;
-}
-
-function createPuzzle(){
-  pieces = [];
+function createPuzzle() {
   puzzleWrap.innerHTML = '';
+  bankContainer = document.createElement('div');
+  bankContainer.className = 'pieces-bank';
+  slotsContainer = document.createElement('div');
+  slotsContainer.className = 'slot-grid';
+  slotsContainer.style.gridTemplateColumns = `repeat(${puzzleCols}, ${pieceWidth}px)`;
+
   const total = puzzleRows * puzzleCols;
-  for(let i = 0; i < total; i++){
-    const box = document.createElement('div');
-    box.className = 'tile';
-    box.style.width = '120px';
-    box.style.height = '80px';
-    // keep your image exactly as-is
-    box.style.backgroundImage = `url(${puzzleImg})`;
+  // create slots
+  for (let i = 0; i < total; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'slot-cell';
+    slot.dataset.index = String(i);
+    slot.addEventListener('dragover', (ev) => ev.preventDefault());
+    slot.addEventListener('drop', onDropToSlot);
+    slot.addEventListener('click', () => onSlotClick(slot));
+    slotsContainer.appendChild(slot);
+  }
+
+  // create pieces (bank) — will be shuffled
+  const pieces = [];
+  for (let i = 0; i < total; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'tile-piece';
+    piece.id = `piece-${i}`;
+    piece.dataset.correctIndex = String(i);
     const col = i % puzzleCols;
     const row = Math.floor(i / puzzleCols);
-    box.style.backgroundSize = `${puzzleCols * 100}% ${puzzleRows * 100}%`;
-    box.style.backgroundPosition = fmtBgPos(col, row);
-    box.style.borderRadius = '6px';
-    box.style.cursor = 'pointer';
-    box.style.transition = 'transform .18s ease';
-    // store the original/correct position for this piece
-    box.dataset.correctIndex = String(i);
-    box.addEventListener('click', onPieceClick);
-    pieces.push(box);
-  }
-  const shuffled = shuffleArray(pieces.slice());
-  shuffled.forEach(p => puzzleWrap.appendChild(p));
-}
-createPuzzle();
-
-function onPieceClick(e){
-  const node = e.currentTarget;
-  if (!selPiece) {
-    selPiece = node;
-    selPiece.style.outline = '2px solid rgba(255,255,255,0.12)';
-    return;
-  }
-  if (selPiece === node) {
-    selPiece.style.outline = '';
-    selPiece = null;
-    return;
-  }
-  swapNodes(selPiece, node);
-  selPiece.style.outline = '';
-  selPiece = null;
-}
-
-function swapNodes(a, b){
-  const parent = a && a.parentNode;
-  if (!parent || !b) return;
-  // perform the DOM swap (handles adjacent/non-adjacent)
-  const aNext = a.nextSibling === b ? a : a.nextSibling;
-  parent.insertBefore(a, b);
-  parent.insertBefore(b, aNext);
-
-  // AFTER swapping, normalize DOM order by matching computed background positions
-  // so that slot i contains the tile whose backgroundPosition matches expectedBgForIndex(i).
-  (function normalizeByComputed() {
-    const children = Array.from(puzzleWrap.children);
-    const total = children.length;
-    const tol = 0.8; // percent tolerance (same tolerance used by your check)
-
-    // build expected numeric positions for slots 0..total-1
-    const expected = [];
-    for (let i = 0; i < total; i++) {
-      const e = parseBgPos(expectedBgForIndex(i));
-      expected.push(e);
-    }
-
-    // read computed numeric positions for each child
-    const computed = children.map(child => ({
-      el: child,
-      pos: parseBgPos(window.getComputedStyle(child).backgroundPosition)
-    }));
-
-    // try to match each expected slot to a child by comparing positions
-    const ordered = new Array(total);
-    const used = new Array(total).fill(false);
-
-    for (let si = 0; si < total; si++) {
-      for (let cj = 0; cj < total; cj++) {
-        if (used[cj]) continue;
-        const p = computed[cj].pos;
-        const e = expected[si];
-        if (!p || !e) continue;
-        if (Math.abs(p[0] - e[0]) <= tol && Math.abs(p[1] - e[1]) <= tol) {
-          ordered[si] = computed[cj].el;
-          used[cj] = true;
-          break;
-        }
-      }
-    }
-
-    // If any slot didn't find a confident match, fallback to ordering by dataset.correctIndex
-    if (ordered.some(x => !x)) {
-      const nodes = Array.from(puzzleWrap.children).sort((A, B) => (Number(A.dataset.correctIndex) || 0) - (Number(B.dataset.correctIndex) || 0));
-      puzzleWrap.innerHTML = '';
-      nodes.forEach(n => puzzleWrap.appendChild(n));
-      return;
-    }
-
-    // Re-attach in the matched order (this will put elements where their visual slice belongs)
-    puzzleWrap.innerHTML = '';
-    ordered.forEach(n => puzzleWrap.appendChild(n));
-  })();
-}
-
-/* shuffle / reset */
-document.getElementById('shuffle2').addEventListener('click', () => {
-  const nodes = Array.from(puzzleWrap.children);
-  const shuffled = shuffleArray(nodes);
-  puzzleWrap.innerHTML = '';
-  shuffled.forEach(n => puzzleWrap.appendChild(n));
-});
-document.getElementById('reset2').addEventListener('click', () => { createPuzzle(); });
-
-/* utility: compute expected background position for an index */
-function expectedBgForIndex(idx){
-  const col = idx % puzzleCols;
-  const row = Math.floor(idx / puzzleCols);
-  return fmtBgPos(col, row);
-}
-
-/* ---------- Minimal helper: parseBgPos(pos) ----------
-   Returns numeric percent array [x,y] or null */
-function parseBgPos(pos){
-  if(!pos || typeof pos !== 'string') return null;
-  // prefer percent matches
-  const pct = pos.match(/-?\d+(\.\d+)?%/g);
-  if(pct && pct.length >= 2){
-    return [ parseFloat(pct[0].replace('%','')), parseFloat(pct[1].replace('%','')) ];
-  }
-  // fallback to numeric values if present
-  const nums = pos.match(/-?\d+(\.\d+)?/g);
-  if(!nums || nums.length < 2) return null;
-  return [ parseFloat(nums[0]), parseFloat(nums[1]) ];
-}
-
-/* ---------- Minimal helper: showPuzzleReport(lines) ----------
-   Small debug overlay (top-right). Call with [] to remove. */
-function showPuzzleReport(lines){
-  const id = 'puzzleReport';
-  let report = document.getElementById(id);
-  if(!lines || lines.length === 0){
-    if(report) report.remove();
-    return;
-  }
-  if(!report){
-    report = document.createElement('pre');
-    report.id = id;
-    Object.assign(report.style, {
-      position: 'fixed',
-      right: '12px',
-      top: '12px',
-      maxWidth: '420px',
-      zIndex: 99999,
-      background: 'rgba(0,0,0,0.78)',
-      color: '#fff',
-      padding: '10px',
-      borderRadius: '8px',
-      fontSize: '12px',
-      lineHeight: '1.3',
-      whiteSpace: 'pre-wrap',
-      boxShadow: '0 6px 18px rgba(0,0,0,0.5)'
+    piece.style.backgroundImage = `url(${puzzleImg})`;
+    piece.style.backgroundSize = `${puzzleCols * 100}% ${puzzleRows * 100}%`;
+    // background-position like earlier (percent values)
+    const x = (-(col * 100) / (puzzleCols - 1)) + '%';
+    const y = (-(row * 100) / (puzzleRows - 1)) + '%';
+    piece.style.backgroundPosition = `${x} ${y}`;
+    piece.draggable = true;
+    piece.addEventListener('dragstart', (ev) => {
+      ev.dataTransfer.setData('text/plain', piece.id);
     });
-    document.body.appendChild(report);
+    piece.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      onPieceClick(piece);
+    });
+    pieces.push(piece);
   }
-  report.textContent = lines.join('\n');
+
+  // shuffle into bank
+  const shuffled = shuffleArray(pieces);
+  shuffled.forEach(p => bankContainer.appendChild(p));
+
+  // attach
+  puzzleWrap.appendChild(slotsContainer);
+  puzzleWrap.appendChild(bankContainer);
+
+  // deselect state
+  selectedPiece = null;
+  updateSelectedVisual();
 }
 
-/* ---------- Robust Stage2 check: compare computed background positions to expected positions ---------- */
-document.getElementById('check2').addEventListener('click', () => {
-  const children = Array.from(puzzleWrap.children);
-  const total = children.length;
-  const tol = 0.8; // percent tolerance
+// place piece into a slot (handles swapping)
+function placePieceInSlot(piece, slot) {
+  if (!piece || !slot) return;
 
-  // build expected numeric positions for slots 0..total-1
-  const expected = [];
-  for (let i = 0; i < total; i++) {
-    expected.push(parseBgPos(expectedBgForIndex(i))); // e.g. [0,0], [-50,0], ...
-  }
+  const currentParent = piece.parentElement;
+  const existing = slot.querySelector('.tile-piece');
 
-  // get computed numeric positions for the tile currently in each slot
-  const computed = children.map(child => parseBgPos(window.getComputedStyle(child).backgroundPosition));
-
-  // helper: find expected index that matches a computed pos (within tolerance)
-  function findExpectedIndexForPos(pos) {
-    if (!pos) return -1;
-    for (let j = 0; j < expected.length; j++) {
-      const e = expected[j];
-      if (!e) continue;
-      if (Math.abs(pos[0] - e[0]) <= tol && Math.abs(pos[1] - e[1]) <= tol) return j;
+  if (existing && existing !== piece) {
+    // swap: put existing back into source parent (if source was slot move it there, else move to bank)
+    const sourceSlot = currentParent && currentParent.classList && currentParent.classList.contains('slot-cell') ? currentParent : null;
+    if (sourceSlot) {
+      // swap positions between slots
+      sourceSlot.appendChild(existing);
+      slot.replaceChild(piece, existing);
+    } else {
+      // piece came from bank: move existing back to bank, put piece into slot
+      bankContainer.appendChild(existing);
+      slot.appendChild(piece);
     }
-    return -1;
+  } else {
+    // empty slot — just append piece
+    slot.appendChild(piece);
   }
+  selectedPiece = null;
+  updateSelectedVisual();
+}
 
-  // mapping: for each slot i, which expectedIndex does its tile represent?
-  const mapped = computed.map(pos => findExpectedIndexForPos(pos));
+function onDropToSlot(e) {
+  e.preventDefault();
+  const id = e.dataTransfer.getData('text/plain');
+  const piece = document.getElementById(id);
+  if (!piece) return;
+  const slot = e.currentTarget;
+  placePieceInSlot(piece, slot);
+}
 
-  // solved if every slot i contains the expected piece i
-  const solved = mapped.every((m, i) => m === i);
+function onPieceClick(piece) {
+  // select the piece (toggle)
+  if (selectedPiece === piece) {
+    selectedPiece = null;
+  } else {
+    selectedPiece = piece;
+  }
+  updateSelectedVisual();
+}
 
-  if (solved) {
-    // success flow (keeps your existing success code)
+function onSlotClick(slot) {
+  if (selectedPiece) {
+    placePieceInSlot(selectedPiece, slot);
+    return;
+  }
+  // if no selected piece, clicking a slot will pick its piece (if any)
+  const existing = slot.querySelector('.tile-piece');
+  if (existing) {
+    selectedPiece = existing;
+    updateSelectedVisual();
+  }
+}
+
+function updateSelectedVisual() {
+  // clear all
+  document.querySelectorAll('.tile-piece').forEach(p => p.classList.toggle('selected', p === selectedPiece));
+}
+
+// public controls:
+document.getElementById('shuffle2').addEventListener('click', () => {
+  // gather all pieces back to bank and shuffle
+  const pieces = Array.from(document.querySelectorAll('.tile-piece'));
+  // clear slots
+  Array.from(slotsContainer.children).forEach(slot => {
+    const child = slot.querySelector('.tile-piece');
+    if (child) bankContainer.appendChild(child);
+  });
+  // shuffle order in bank
+  const shuffled = shuffleArray(pieces);
+  bankContainer.innerHTML = '';
+  shuffled.forEach(p => bankContainer.appendChild(p));
+  selectedPiece = null;
+  updateSelectedVisual();
+});
+
+document.getElementById('reset2').addEventListener('click', () => {
+  createPuzzle();
+});
+
+document.getElementById('check2').addEventListener('click', () => {
+  const total = puzzleRows * puzzleCols;
+  let ok = true;
+  for (let i = 0; i < total; i++) {
+    const slot = slotsContainer.children[i];
+    const piece = slot.querySelector('.tile-piece');
+    if (!piece) { ok = false; break; }
+    if (String(piece.dataset.correctIndex) !== String(i)) { ok = false; break; }
+  }
+  if (ok) {
+    // success: advance silently (no alert)
     stage2.classList.remove('active');
     stage3.classList.add('active');
     solvedStages++;
+    // call showMemory if available (no alert fallback)
     if (typeof showMemory === 'function') {
       showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
-    } else {
-      alert('Memory unlocked: "That evening by the park"');
     }
-    const rep = document.getElementById('puzzleReport'); if (rep) rep.remove();
-    return;
+    // subtle success visual
+    document.getElementById('puzzleHint').textContent = 'Memory unlocked — proceed to the final stage.';
+  } else {
+    // not solved: gentle feedback only
+    shake(slotsContainer);
+    document.getElementById('puzzleHint').textContent = 'Not quite — try rearranging the pieces in order.';
   }
-
-  // not solved: build useful debug lines
-  const mismatchLines = children.map((child, idx) => {
-    const comp = window.getComputedStyle(child).backgroundPosition;
-    const matchTo = mapped[idx];
-    return `slot:${idx} | data-correct:${child.dataset.correctIndex} | computed:${comp} | matchedTo:${matchTo} | expected:${expectedBgForIndex(idx)}`;
-  });
-
-  // show overlay and console log
-  showPuzzleReport(['Not solved yet — mismatch summary:', '', ...mismatchLines]);
-  console.log('PUZZLE DEBUG', mismatchLines);
-  shake(puzzleWrap);
-  alert('Looks close—try to get the photo pieces in order.');
 });
 
-/* ---------- small helpers (if not present elsewhere) ---------- */
-function shuffleArray(a){ return a.slice().sort(()=>Math.random()-0.5); }
-function shake(el){ el.style.transition='transform .06s'; el.style.transform='translateX(-6px)'; setTimeout(()=>el.style.transform='translateX(6px)',80); setTimeout(()=>el.style.transform='translateX(0)',160); setTimeout(()=>el.style.transition='',240); }
+// initialize puzzle on load
+createPuzzle();
 
-
-/* --- Stage 3: Final arrange sentence --- */
+/* --- Stage 3: Final arrange sentence (unchanged logic with click placement) --- */
 const finalTiles = document.getElementById('finalTiles');
 const finalDrop = document.getElementById('finalDrop');
-const finalWords = ["Thank","you","for","being","in","my","life"]; // "Thank" already used
+const finalWords = ["Thank","you","for","being","in","my","life"];
 let fTiles = shuffleArray(finalWords.slice());
 function renderFinal(){
   finalTiles.innerHTML=''; finalDrop.innerHTML='';
@@ -484,7 +434,7 @@ function renderFinal(){
     d.className='tile';
     d.textContent = w;
     d.draggable=true;
-    d.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', e.target.id || w));
+    d.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', w));
     finalTiles.appendChild(d);
   });
 }
@@ -510,7 +460,6 @@ document.getElementById('check3').addEventListener('click', ()=>{
   const seq = ["Thank","you","for","being","in","my","life"];
   let ok = seq.every((w,i)=> w === cur[i]);
   if(ok){
-    // final reveal
     solvedStages++;
     startReveal();
   } else {
@@ -521,20 +470,15 @@ document.getElementById('check3').addEventListener('click', ()=>{
 
 /* --- Reveal sequence --- */
 function startReveal(){
-  // one-time check: allow reveal only once per session
   if(localStorage.getItem('revealed')==='true'){
     alert('You have already revealed the letter.');
     return;
   }
   localStorage.setItem('revealed','true');
-  // animate ink drawing
   ink.querySelector('svg').classList.add('play');
-  // prepare letter (handwritten-like)
   const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nSayak ❤️`;
-  // reveal text with typing + highlight sync (simulate handwriting)
   handText.textContent='';
   document.getElementById('letterArea').classList.add('show');
-  // synchronized type and audio
   let i=0;
   const speed = 28;
   const t = setInterval(()=>{
@@ -542,11 +486,9 @@ function startReveal(){
     i++;
     if(i>letter.length){
       clearInterval(t);
-      // finish reveal
       fireConfetti();
     }
   }, speed);
-  // play music (user gesture created by puzzle steps)
   bgMusic.volume = 0.75;
   bgMusic.currentTime = 0;
   bgMusic.play().catch(()=>{/* ignore */});
@@ -575,39 +517,6 @@ document.getElementById('downloadKeepsake').addEventListener('click', ()=>{
 
 /* replay audio */
 document.getElementById('replayAudio').addEventListener('click', ()=>{ bgMusic.currentTime=0; bgMusic.play().catch(()=>{}); });
-
-/* --- utilities --- */
-function shuffleArray(a){ return a.slice().sort(()=>Math.random()-0.5); }
-function shake(el){ el.style.transition='transform .06s'; el.style.transform='translateX(-6px)'; setTimeout(()=>el.style.transform='translateX(6px)',80); setTimeout(()=>el.style.transform='translateX(0)',160); setTimeout(()=>el.style.transition='',240); }
-
-function fireConfetti(){
-  const c = document.getElementById('confetti');
-  c.innerHTML='';
-  const colors = ['#ff6b81','#ffd166','#06d6a0','#4cc9f0','#a0c4ff'];
-  for(let i=0;i<36;i++){
-    const el = document.createElement('div');
-    el.style.position='absolute';
-    el.style.left = (10 + Math.random()*80)+'%';
-    el.style.top = ( -10 + Math.random()*2)+'%';
-    el.style.width = (8+Math.random()*12)+'px';
-    el.style.height = (10+Math.random()*14)+'px';
-    el.style.background = colors[Math.floor(Math.random()*colors.length)];
-    el.style.borderRadius='3px';
-    el.style.opacity = '0.95';
-    el.style.transform = 'rotate('+ (Math.random()*360) +'deg)';
-    el.style.transition = 'transform 1.8s linear, top 1.8s linear, left 1.8s linear, opacity 2s linear';
-    c.appendChild(el);
-    setTimeout(((el)=>{
-      return ()=> {
-        el.style.top = (60+Math.random()*40)+'%';
-        el.style.left = (10+Math.random()*80)+'%';
-        el.style.transform = 'rotate('+ (Math.random()*720) +'deg) translateY(40px)';
-        el.style.opacity = '0';
-      };
-    })(el), 60*i);
-  }
-  setTimeout(()=>{ c.innerHTML=''; }, 2600);
-}
 
 /* helpers for canvas text */
 function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
@@ -641,7 +550,6 @@ function roundRect(ctx, x, y, w, h, r) {
 /* idle gentle hint */
 let idle = setTimeout(()=>{ document.getElementById('hint1').click(); }, 22000);
 document.addEventListener('click', ()=>{ clearTimeout(idle); });
-
 </script>
 </body>
 </html>
