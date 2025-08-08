@@ -166,7 +166,7 @@
       </div>
     </div>
 
-    <audio id="bgMusic" preload="auto" crossorigin="anonymous">
+    <audio id="bgMusic" preload="auto" controls crossorigin="anonymous">
       <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
       <!-- placeholder if needed -->
     </audio>
@@ -576,14 +576,17 @@ document.getElementById('shuffle3').addEventListener('click', ()=>{
   renderFinal();
 });
 
-document.getElementById('check3').addEventListener('click', ()=>{
-  const cur = Array.from(finalDrop.children).map(n=>n.textContent.trim());
-  if(cur.length !== finalWords.length){ alert('Place all words in the answer area.'); return; }
-  const seq = ["Thank","you","for","being","in","my","life"];
-  let ok = seq.every((w,i)=> w === cur[i]);
-  if(ok){
+document.getElementById('check3').addEventListener('click', () => {
+  const cur = Array.from(finalDrop.children).map(n => n.textContent.trim());
+  if (cur.length !== finalWords.length) {
+    alert('Place all words in the answer area.');
+    return;
+  }
+  const seq = ["Thank", "you", "for", "being", "in", "my", "life"];
+  let ok = seq.every((w, i) => w === cur[i]);
+  if (ok) {
     solvedStages++;
-    startReveal();
+    startReveal();  // <== no alert here, just startReveal
   } else {
     shake(finalDrop);
     alert('Almost — try reading them out loud in order.');
@@ -591,60 +594,60 @@ document.getElementById('check3').addEventListener('click', ()=>{
 });
 
 /* --- Reveal sequence --- */
-function startReveal(){
-  if(localStorage.getItem('revealed')==='true'){
+function startReveal() {
+  if (localStorage.getItem('revealed') === 'true') {
     alert('You have already revealed the letter.');
     return;
   }
-  localStorage.setItem('revealed','true');
+  localStorage.setItem('revealed', 'true');
   ink.querySelector('svg').classList.add('play');
   const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nSayak ❤️`;
-  handText.textContent='';
+  handText.textContent = '';
   document.getElementById('letterArea').classList.add('show');
-  let i=0;
+  let i = 0;
   const speed = 28;
-  const t = setInterval(()=>{
+  const t = setInterval(() => {
     handText.textContent += letter[i] || '';
     i++;
-    if(i>letter.length){
+    if (i > letter.length) {
       clearInterval(t);
       fireConfetti();
     }
   }, speed);
   bgMusic.volume = 0.75;
   bgMusic.currentTime = 0;
-  bgMusic.play().catch(()=>{/* ignore */});
+  bgMusic.play().catch(() => { /* ignore */ });
 }
 
 /* --- keepsake download: draw a postcard on canvas --- */
-document.getElementById('downloadKeepsake').addEventListener('click', ()=>{
+document.getElementById('downloadKeepsake').addEventListener('click', () => {
   const canvas = document.createElement('canvas');
   canvas.width = 1200; canvas.height = 800;
   const ctx = canvas.getContext('2d');
   // background
-  ctx.fillStyle = '#071226'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#071226'; ctx.fillRect(0, 0, canvas.width, canvas.height);
   // card bg
-  ctx.fillStyle = '#07283a'; roundRect(ctx,60,60,1080,680,20); ctx.fill();
+  ctx.fillStyle = '#07283a'; roundRect(ctx, 60, 60, 1080, 680, 20); ctx.fill();
   // title
-  ctx.fillStyle = '#fff'; ctx.font = '48px Pacifico'; ctx.fillText('For you, always',120,160);
+  ctx.fillStyle = '#fff'; ctx.font = '48px Pacifico'; ctx.fillText('For you, always', 120, 160);
   // body
   ctx.font = '24px Inter';
   const body = 'Thank you for being in my life.\nYou turn ordinary days into something beautiful.\nAlways, Tintin';
   wrapText(ctx, body, 120, 220, 960, 34);
   // small footer
-  ctx.fillStyle = '#9aa6b2'; ctx.font = '18px Inter'; ctx.fillText('A small moment — saved just for you',120,680);
+  ctx.fillStyle = '#9aa6b2'; ctx.font = '18px Inter'; ctx.fillText('A small moment — saved just for you', 120, 680);
   const url = canvas.toDataURL('image/png');
   const a = document.createElement('a'); a.href = url; a.download = 'keepsake.png'; a.click();
 });
 
 /* replay audio */
-document.getElementById('replayAudio').addEventListener('click', ()=>{ bgMusic.currentTime=0; bgMusic.play().catch(()=>{}); });
+document.getElementById('replayAudio').addEventListener('click', () => { bgMusic.currentTime = 0; bgMusic.play().catch(() => { }); });
 
 /* helpers for canvas text */
 function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   const words = text.split(' ');
   let line = '';
-  for(let n = 0; n < words.length; n++) {
+  for (let n = 0; n < words.length; n++) {
     const testLine = line + words[n] + ' ';
     const metrics = ctx.measureText(testLine);
     const testWidth = metrics.width;
@@ -661,11 +664,11 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 }
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.arcTo(x+w, y, x+w, y+h, r);
-  ctx.arcTo(x+w, y+h, x, y+h, r);
-  ctx.arcTo(x, y+h, x, y, r);
-  ctx.arcTo(x, y, x+w, y, r);
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
 
