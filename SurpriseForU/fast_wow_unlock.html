@@ -285,11 +285,63 @@ function onPieceClick(e){
 }
 
 function swapNodes(a, b){
-  const parent = a.parentNode;
-  if (!parent) return;
+  const parent = a && a.parentNode;
+  if (!parent || !b) return;
+  // perform the DOM swap (handles adjacent/non-adjacent)
   const aNext = a.nextSibling === b ? a : a.nextSibling;
   parent.insertBefore(a, b);
   parent.insertBefore(b, aNext);
+
+  // AFTER swapping, normalize DOM order by matching computed background positions
+  // so that slot i contains the tile whose backgroundPosition matches expectedBgForIndex(i).
+  (function normalizeByComputed() {
+    const children = Array.from(puzzleWrap.children);
+    const total = children.length;
+    const tol = 0.8; // percent tolerance (same tolerance used by your check)
+
+    // build expected numeric positions for slots 0..total-1
+    const expected = [];
+    for (let i = 0; i < total; i++) {
+      const e = parseBgPos(expectedBgForIndex(i));
+      expected.push(e);
+    }
+
+    // read computed numeric positions for each child
+    const computed = children.map(child => ({
+      el: child,
+      pos: parseBgPos(window.getComputedStyle(child).backgroundPosition)
+    }));
+
+    // try to match each expected slot to a child by comparing positions
+    const ordered = new Array(total);
+    const used = new Array(total).fill(false);
+
+    for (let si = 0; si < total; si++) {
+      for (let cj = 0; cj < total; cj++) {
+        if (used[cj]) continue;
+        const p = computed[cj].pos;
+        const e = expected[si];
+        if (!p || !e) continue;
+        if (Math.abs(p[0] - e[0]) <= tol && Math.abs(p[1] - e[1]) <= tol) {
+          ordered[si] = computed[cj].el;
+          used[cj] = true;
+          break;
+        }
+      }
+    }
+
+    // If any slot didn't find a confident match, fallback to ordering by dataset.correctIndex
+    if (ordered.some(x => !x)) {
+      const nodes = Array.from(puzzleWrap.children).sort((A, B) => (Number(A.dataset.correctIndex) || 0) - (Number(B.dataset.correctIndex) || 0));
+      puzzleWrap.innerHTML = '';
+      nodes.forEach(n => puzzleWrap.appendChild(n));
+      return;
+    }
+
+    // Re-attach in the matched order (this will put elements where their visual slice belongs)
+    puzzleWrap.innerHTML = '';
+    ordered.forEach(n => puzzleWrap.appendChild(n));
+  })();
 }
 
 /* shuffle / reset */
