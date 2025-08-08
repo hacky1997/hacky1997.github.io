@@ -32,6 +32,11 @@
     overflow:hidden;
     backdrop-filter: blur(6px);
   }
+
+  #audio, #bgMusic {
+  display: none;
+  }
+  
   header{display:flex;gap:14px;align-items:center;padding:8px 12px}
   .avatar{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#0aa5a5,#2bb0ff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:22px;flex:0 0 72px}
   h1{font-size:20px;margin:0;color:#fff}
@@ -166,7 +171,7 @@
       </div>
     </div>
 
-    <audio id="bgMusic" preload="auto" controls crossorigin="anonymous">
+    <audio id="bgMusic" preload="auto" crossorigin="anonymous">
       <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
       <!-- placeholder if needed -->
     </audio>
