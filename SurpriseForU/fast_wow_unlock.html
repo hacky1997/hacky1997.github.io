@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Unlock My Heart — A small surprise</title>
+<title>Unlock your gift — A small surprise from Tintin</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -81,8 +81,8 @@
     <header>
       <div class="avatar">SN</div>
       <div>
-        <h1 id="title">A small surprise — for you</h1>
-        <p class="lead">Solve the little moments—each solved piece reveals a memory. Finish to read a short letter and listen.</p>
+        <h1 id="title">A small surprise — for you Pinki</h1>
+        <p class="lead">Solve the little moments—each solved piece reveals a memory. Finish reading a short letter and listen.</p>
       </div>
     </header>
 
@@ -161,7 +161,7 @@
 
     <div class="confetti" id="confetti"></div>
 
-    <footer class="sig">Made with care — one small moment at a time 💌</footer>
+    <footer class="sig">Made with care — one small moment at a time 💌 from Babai</footer>
   </div>
 </div>
 
@@ -178,7 +178,7 @@ const bgMusic = document.getElementById('bgMusic');
 let solvedStages = 0;
 
 // Stage1 word
-const word1 = "Thank";
+const word1 = "Pinkieee";
 let tiles1 = shuffleArray(word1.split(''));
 const scrambleEl = document.getElementById('scramble1');
 
@@ -340,18 +340,16 @@ document.getElementById('check1').addEventListener('click', ()=>{
 //   createPuzzle();
 // });
 
-/* ---------- DROP-IN Stage 2: Memory Tile (replace existing Stage 2 block) ---------- */
+/* ---------- FIXED Stage 2: Memory Tile (DROP-IN REPLACEMENT) ---------- */
 const puzzleWrap = document.getElementById('puzzleWrap');
 let puzzleRows = 2, puzzleCols = 3;
-let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your image
+let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // My image
 let pieces = [];
 let selPiece = null;
 
 function fmtBgPos(col, row){
-  // returns normalized background position string like "-0% -0%"
   const x = (-(col * 100) / (puzzleCols - 1));
   const y = (-(row * 100) / (puzzleRows - 1));
-  // keep consistent formatting
   return `${Number(x.toFixed(4))}% ${Number(y.toFixed(4))}%`;
 }
 
@@ -372,19 +370,16 @@ function createPuzzle(){
     box.style.borderRadius = '6px';
     box.style.cursor = 'pointer';
     box.style.transition = 'transform .18s ease';
-    // store the original/correct position for this piece
+    // store the original/correct position for this piece (consistent key)
     box.dataset.correctIndex = String(i);
-    // attach click handler
     box.addEventListener('click', onPieceClick);
     pieces.push(box);
   }
-  // shuffle DOM order and append (DOM order = current order)
   const shuffled = shuffleArray(pieces.slice());
   shuffled.forEach(p => puzzleWrap.appendChild(p));
 }
 createPuzzle();
 
-// click-to-select, then click another to swap (swaps DOM nodes)
 function onPieceClick(e){
   const node = e.currentTarget;
   if (!selPiece) {
@@ -397,89 +392,126 @@ function onPieceClick(e){
     selPiece = null;
     return;
   }
-  // swap DOM nodes (visual + DOM order swap together)
   swapNodes(selPiece, node);
   selPiece.style.outline = '';
   selPiece = null;
 }
 
 function swapNodes(a, b){
-  const pa = a.parentNode;
-  const pb = b.parentNode;
-  if (!pa || !pb) return;
+  const parent = a.parentNode;
+  if (!parent) return;
   const aNext = a.nextSibling === b ? a : a.nextSibling;
-  pa.insertBefore(a, b);
-  pa.insertBefore(b, aNext);
+  parent.insertBefore(a, b);
+  parent.insertBefore(b, aNext);
 }
 
-/* Shuffle: randomize the DOM children */
+/* shuffle / reset (robust) */
 document.getElementById('shuffle2').addEventListener('click', () => {
   const nodes = Array.from(puzzleWrap.children);
   const shuffled = shuffleArray(nodes);
   puzzleWrap.innerHTML = '';
   shuffled.forEach(n => puzzleWrap.appendChild(n));
 });
+document.getElementById('reset2').addEventListener('click', () => { createPuzzle(); });
 
-/* Reset: rebuild puzzle fresh */
-document.getElementById('reset2').addEventListener('click', () => {
-  createPuzzle();
-});
+/* utility: compute expected background position for an index */
+function expectedBgForIndex(idx){
+  const col = idx % puzzleCols;
+  const row = Math.floor(idx / puzzleCols);
+  return fmtBgPos(col, row);
+}
 
-/* Check: verify each DOM child is the piece that belongs at that slot */
+/* helper: normalize "x% y%" to numeric array [x,y] */
+function parseBgPos(pos){
+  if(!pos) return null;
+  const parts = pos.trim().split(/\s+/);
+  if(parts.length < 2) return null;
+  const a = Number(parts[0].replace('%',''));
+  const b = Number(parts[1].replace('%',''));
+  if(isNaN(a) || isNaN(b)) return null;
+  return [a, b];
+}
+
+/* debug overlay */
+function showPuzzleReport(lines){
+  let report = document.getElementById('puzzleReport');
+  if (!report) {
+    report = document.createElement('pre');
+    report.id = 'puzzleReport';
+    report.style.position = 'fixed';
+    report.style.right = '12px';
+    report.style.top = '12px';
+    report.style.maxWidth = '360px';
+    report.style.zIndex = 99999;
+    report.style.background = 'rgba(0,0,0,0.85)';
+    report.style.color = '#fff';
+    report.style.padding = '10px';
+    report.style.borderRadius = '8px';
+    report.style.fontSize = '12px';
+    report.style.lineHeight = '1.3';
+    report.style.whiteSpace = 'pre-wrap';
+    document.body.appendChild(report);
+  }
+  report.textContent = lines.join('\n');
+}
+
+/* primary check handler: uses dataset.correctIndex first, then fallback to computed bg pos */
 document.getElementById('check2').addEventListener('click', () => {
   const children = Array.from(puzzleWrap.children);
-  // primary: compare dataset.correctIndex with DOM index
+  // primary by dataset.correctIndex
   const byIndex = children.every((child, idx) => {
-    return (typeof child.dataset.correctindex !== 'undefined') && (Number(child.dataset.correctIndex) === idx);
+    const ci = child.dataset.correctIndex;
+    return (typeof ci !== 'undefined' && ci !== null && Number(ci) === idx);
   });
 
-  if (byIndex) {
-    // solved: proceed to next stage
+  if(byIndex){
+    // solved
     stage2.classList.remove('active');
     stage3.classList.add('active');
     solvedStages++;
-    if (typeof showMemory === 'function') {
+    if(typeof showMemory === 'function'){
       showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
     } else {
       alert('Memory unlocked: "That evening by the park"');
     }
+    // remove debug overlay if any
+    const rep = document.getElementById('puzzleReport'); if(rep) rep.remove();
     return;
   }
 
-  // fallback: sometimes dataset may exist but DOM index mismatch due to whitespace nodes;
-  // double-check by comparing normalized backgroundPosition to expected position for slot
-  const posMatches = children.every((child, idx) => {
-    const actual = (child.style.backgroundPosition || '').trim();
-    // compute expected based on idx
-    const col = idx % puzzleCols;
-    const row = Math.floor(idx / puzzleCols);
-    const expected = fmtBgPos(col, row);
-    // numeric-tolerant compare
-    const parsePos = s => s.split(/\s+/).map(v => Number(v.replace('%','')));
-    const a = parsePos(actual);
-    const e = parsePos(expected);
-    if (a.length !== 2 || e.length !==2 || a.some(isNaN) || e.some(isNaN)) return false;
-    return (Math.abs(a[0]-e[0]) <= 0.6 && Math.abs(a[1]-e[1]) <= 0.6);
+  // fallback: compare computed background positions (tolerant)
+  const mismatchLines = [];
+  const posOk = children.every((child, idx) => {
+    const computed = window.getComputedStyle(child).backgroundPosition;
+    const actual = parseBgPos(computed);
+    const expected = parseBgPos(expectedBgForIndex(idx));
+    mismatchLines.push(`slot:${idx} | correctIndex:${child.dataset.correctIndex} | computedBG:${computed} | expectedBG:${expectedBgForIndex(idx)}`);
+    if(!actual || !expected) return false;
+    // tolerance: 0.6%
+    return (Math.abs(actual[0] - expected[0]) <= 0.6 && Math.abs(actual[1] - expected[1]) <= 0.6);
   });
 
-  if (posMatches) {
+  if(posOk){
     stage2.classList.remove('active');
     stage3.classList.add('active');
     solvedStages++;
-    if (typeof showMemory === 'function') {
+    if(typeof showMemory === 'function'){
       showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
     } else {
       alert('Memory unlocked: "That evening by the park"');
     }
+    const rep = document.getElementById('puzzleReport'); if(rep) rep.remove();
     return;
   }
 
-  // not solved
+  // not solved: show friendly animation + debug details
   shake(puzzleWrap);
+  showPuzzleReport(['Not solved yet — mismatch summary:','', ...mismatchLines]);
+  console.log('PUZZLE DEBUG', mismatchLines);
   alert('Looks close—try to get the photo pieces in order.');
 });
 
-/* utility helpers */
+/* helpers */
 function shuffleArray(a){ return a.slice().sort(()=>Math.random()-0.5); }
 function shake(el){ el.style.transition='transform .06s'; el.style.transform='translateX(-6px)'; setTimeout(()=>el.style.transform='translateX(6px)',80); setTimeout(()=>el.style.transform='translateX(0)',160); setTimeout(()=>el.style.transition='',240); }
 
