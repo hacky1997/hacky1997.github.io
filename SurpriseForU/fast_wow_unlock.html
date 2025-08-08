@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Unlock My Heart — A small surprise</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#0f1724;
+    --bg2:#081829;
+    --card:#ffffff;
+    --accent:#ff6b81;
+    --muted:#9aa6b2;
+    --glass: rgba(255,255,255,0.06);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(255,107,129,0.06), transparent 6%),
+                linear-gradient(180deg,#041826 0%, #071226 40%, #071a2a 100%);
+    color: #edf2f7;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .card{
+    width:980px;max-width:96%;border-radius:18px;padding:18px;position:relative;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    box-shadow: 0 12px 40px rgba(2,6,23,0.6);
+    overflow:hidden;
+    backdrop-filter: blur(6px);
+  }
+  header{display:flex;gap:14px;align-items:center;padding:8px 12px}
+  .avatar{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#0aa5a5,#2bb0ff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:22px;flex:0 0 72px}
+  h1{font-size:20px;margin:0;color:#fff}
+  p.lead{margin:6px 0 0;color:var(--muted);font-size:13px}
+  .content{display:flex;gap:20px;padding:18px}
+  .left{flex:1;min-width:300px}
+  .right{width:420px;flex:0 0 420px}
+  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.03)}
+  .tiles{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .tile{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);cursor:grab;font-weight:700; color:#fff; user-select:none; min-width:54px; text-align:center}
+  .dropzone{min-height:56px;border-radius:10px;padding:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center; background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); border:2px dashed rgba(255,255,255,0.03)}
+  .actions{display:flex;gap:8px;margin-top:12px;align-items:center}
+  button{background:var(--accent);color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+  button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(255,107,129,0.12)}
+  .hint{color:var(--muted);font-size:13px;margin-top:8px}
+  .stage{display:none}
+  .stage.active{display:block}
+  /* handwriting reveal */
+  .handwritten{
+    font-family: 'Pacifico', cursive;
+    font-size:28px;
+    color:#fff;
+    display:inline-block;
+    line-height:1.1;
+  }
+  .reveal-wrap{position:relative;overflow:hidden;padding:18px;border-radius:12px}
+  .reveal-text{transform:translateY(0);opacity:0;transition:opacity .4s ease .4s}
+  .reveal-text.show{opacity:1}
+  .ink{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+  .ink svg path{stroke:#fff;stroke-width:2;fill:none;stroke-dasharray:1200;stroke-dashoffset:1200;transition:stroke-dashoffset 3.6s ease;}
+  .ink svg.play path{stroke-dashoffset:0}
+  .breath{display:inline-block;transform-origin:center center;animation:breath 1.6s ease-in-out infinite}
+  @keyframes breath{0%{transform:scale(0.98)}50%{transform:scale(1.02)}100%{transform:scale(0.98)}}
+  /* confetti hearts */
+  .confetti{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;overflow:hidden}
+  footer.sig{margin-top:14px;color:var(--muted);font-size:13px;text-align:center}
+  /* responsive */
+  @media (max-width:880px){
+    .content{flex-direction:column}
+    .right{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" role="main" aria-labelledby="title">
+    <header>
+      <div class="avatar">SN</div>
+      <div>
+        <h1 id="title">A small surprise — for you</h1>
+        <p class="lead">Solve the little moments—each solved piece reveals a memory. Finish to read a short letter and listen.</p>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="left">
+        <!-- Stage 1 -->
+        <div class="panel stage active" id="stage1">
+          <div style="font-weight:700">Stage 1 — Quick Warmup</div>
+          <div style="margin-top:8px;color:var(--muted)">Unscramble a short word that starts the sentence.</div>
+          <div class="tiles" id="scramble1"></div>
+          <div class="actions">
+            <button id="check1">Check</button>
+            <button class="ghost" id="hint1">Hint</button>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="panel stage" id="stage2" style="margin-top:12px">
+          <div style="font-weight:700">Stage 2 — Memory Tile</div>
+          <div style="margin-top:8px;color:var(--muted)">Piece the photo together — it's one of our moments.</div>
+          <div id="puzzleWrap" style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center"></div>
+          <div class="actions" style="justify-content:center;margin-top:10px">
+            <button id="shuffle2">Shuffle</button>
+            <button class="ghost" id="reset2">Reset</button>
+            <button id="check2">Check</button>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="panel stage" id="stage3" style="margin-top:12px">
+          <div style="font-weight:700">Stage 3 — Final Sentence</div>
+          <div style="margin-top:8px;color:var(--muted)">Arrange the words to complete the sentence.</div>
+          <div class="tiles" id="finalTiles"></div>
+          <div style="margin-top:12px" class="dropzone" id="finalDrop"></div>
+          <div class="actions">
+            <button id="check3">Reveal</button>
+            <button class="ghost" id="shuffle3">Shuffle</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="panel" style="display:flex;flex-direction:column;gap:12px;align-items:center;min-height:320px;justify-content:center">
+          <div style="text-align:center">
+            <div style="font-weight:700;color:#fff">Final Reveal</div>
+            <div style="color:var(--muted);margin-top:6px">When all stages are complete, a letter will be written out and music will play.</div>
+          </div>
+
+          <div class="reveal-wrap" id="revealWrap" style="width:100%;margin-top:8px;">
+            <div style="text-align:center;margin-bottom:10px;">
+              <div class="handwritten breath" id="handTitle">For you, always</div>
+            </div>
+            <div class="reveal-text" id="letterArea" aria-live="polite">
+              <div id="handText" style="font-size:15px;color:#f2f7fb;line-height:1.6;min-height:220px;padding:12px;border-radius:8px"></div>
+            </div>
+            <div class="ink" id="inkWrap" aria-hidden="true">
+              <!-- SVG stroke placeholder (simulated handwriting path) -->
+              <svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid meet" style="width:100%;height:120px">
+                <path d="M20 140 C80 40,160 220,240 120 C320 20,390 200,470 120 C550 40,620 180,740 120" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div style="width:100%;text-align:center;margin-top:8px">
+            <button id="downloadKeepsake" class="ghost">Download Keepsake</button>
+            <button id="replayAudio" class="ghost">Play Again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <audio id="bgMusic" preload="auto" crossorigin="anonymous">
+      <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
+      <!-- placeholder if needed -->
+    </audio>
+
+    <div class="confetti" id="confetti"></div>
+
+    <footer class="sig">Made with care — one small moment at a time 💌</footer>
+  </div>
+</div>
+
+<script>
+/* --- Stage 1: Scramble --- */
+const stage1 = document.getElementById('stage1');
+const stage2 = document.getElementById('stage2');
+const stage3 = document.getElementById('stage3');
+const revealWrap = document.getElementById('revealWrap');
+const ink = document.getElementById('inkWrap');
+const handText = document.getElementById('handText');
+const bgMusic = document.getElementById('bgMusic');
+
+let solvedStages = 0;
+
+// Stage1 word
+const word1 = "Thank";
+let tiles1 = shuffleArray(word1.split(''));
+const scrambleEl = document.getElementById('scramble1');
+
+function renderScramble(){
+  scrambleEl.innerHTML='';
+  tiles1.forEach((ch,i)=>{
+    const d = document.createElement('div');
+    d.className='tile';
+    d.textContent = ch;
+    d.draggable=true;
+    d.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', e.target.textContent));
+    scrambleEl.appendChild(d);
+  });
+}
+renderScramble();
+
+// allow drop to reorder by click - simple mechanic: click to select, click target to swap
+let selectedTile = null;
+scrambleEl.addEventListener('click', (e)=>{
+  if(!e.target.classList.contains('tile')) return;
+  if(selectedTile===null){ selectedTile=e.target; selectedTile.style.outline='2px solid rgba(255,255,255,0.12)'; }
+  else { // swap text
+    const tmp = selectedTile.textContent;
+    selectedTile.textContent = e.target.textContent;
+    e.target.textContent = tmp;
+    selectedTile.style.outline='';
+    selectedTile=null;
+  }
+});
+
+document.getElementById('hint1').addEventListener('click', ()=>{
+  alert('Hint: The sentence begins with the word "Thank".');
+});
+
+document.getElementById('check1').addEventListener('click', ()=>{
+  const cur = Array.from(scrambleEl.children).map(n=>n.textContent).join('');
+  if(cur===word1){
+    // proceed
+    stage1.classList.remove('active');
+    stage2.classList.add('active');
+    solvedStages++;
+  } else {
+    shake(scrambleEl);
+    alert('Not yet—try arranging them as the real word.');
+  }
+});
+
+/* --- Stage 2: Jigsaw (uses a placeholder image from picsum) --- */
+const puzzleWrap = document.getElementById('puzzleWrap');
+let puzzleRows = 2, puzzleCols=3;
+let puzzleImg = 'https://picsum.photos/id/1011/800/500'; // scenic placeholder
+let pieces = [];
+
+function createPuzzle(){
+  pieces = [];
+  puzzleWrap.innerHTML='';
+  const total = puzzleRows*puzzleCols;
+  for(let i=0;i<total;i++){
+    const box = document.createElement('div');
+    box.style.width = '120px';
+    box.style.height = '80px';
+    box.style.backgroundImage = `url(${puzzleImg})`;
+    // background position
+    const col = i % puzzleCols;
+    const row = Math.floor(i / puzzleCols);
+    const bw = 100/puzzleCols;
+    const bh = 100/puzzleRows;
+    box.style.backgroundSize = `${puzzleCols*100}% ${puzzleRows*100}%`;
+    box.style.backgroundPosition = `${-(col*100)/(puzzleCols-1)}% ${-(row*100)/(puzzleRows-1)}%`;
+    box.style.borderRadius='6px';
+    box.style.cursor='pointer';
+    box.style.transition='transform .18s ease';
+    box.dataset.idx = i;
+    pieces.push(box);
+  }
+  pieces = shuffleArray(pieces);
+  pieces.forEach(p=> puzzleWrap.appendChild(p));
+}
+createPuzzle();
+
+document.getElementById('shuffle2').addEventListener('click', ()=>{ pieces = shuffleArray(pieces); puzzleWrap.innerHTML=''; pieces.forEach(p=> puzzleWrap.appendChild(p));});
+document.getElementById('reset2').addEventListener('click', ()=>{ createPuzzle(); });
+document.getElementById('check2').addEventListener('click', ()=>{
+  // check if correct order (by dataset idx)
+  const current = Array.from(puzzleWrap.children).map(n=> parseInt(n.dataset.idx));
+  let correct = true;
+  for(let i=0;i<current.length;i++){ if(current[i] !== i){ correct=false; break; } }
+  if(correct){
+    stage2.classList.remove('active');
+    stage3.classList.add('active');
+    solvedStages++;
+    // show little photo memory text
+    alert('Memory unlocked: "That evening by the park"');
+  } else {
+    shake(puzzleWrap);
+    alert('Looks close—try to get the photo pieces in order.');
+  }
+});
+
+/* make puzzle pieces draggable to reorder (swap on click) */
+let selPiece = null;
+puzzleWrap.addEventListener('click', (e)=>{
+  if(!e.target.dataset) return;
+  if(selPiece===null){ selPiece = e.target; selPiece.style.outline='2px solid rgba(255,255,255,0.12)'; }
+  else {
+    // swap nodes visually
+    const a = selPiece;
+    const b = e.target;
+    const aClone = a.cloneNode(true);
+    const bClone = b.cloneNode(true);
+    a.parentNode.replaceChild(aClone, a);
+    b.parentNode.replaceChild(bClone, b);
+    selPiece = null;
+  }
+});
+
+/* --- Stage 3: Final arrange sentence --- */
+const finalTiles = document.getElementById('finalTiles');
+const finalDrop = document.getElementById('finalDrop');
+const finalWords = ["you","for","being","in","my","life"]; // "Thank" already used
+let fTiles = shuffleArray(finalWords.slice());
+function renderFinal(){
+  finalTiles.innerHTML=''; finalDrop.innerHTML='';
+  fTiles.forEach((w,i)=>{
+    const d = document.createElement('div');
+    d.className='tile';
+    d.textContent = w;
+    d.draggable=true;
+    d.addEventListener('dragstart', e=> e.dataTransfer.setData('text/plain', e.target.id || w));
+    finalTiles.appendChild(d);
+  });
+}
+renderFinal();
+// simple click to move from tiles to dropzone
+finalTiles.addEventListener('click', e=>{
+  if(!e.target.classList.contains('tile')) return;
+  finalDrop.appendChild(e.target);
+});
+finalDrop.addEventListener('click', e=>{
+  if(!e.target.classList.contains('tile')) return;
+  finalTiles.appendChild(e.target);
+});
+
+document.getElementById('shuffle3').addEventListener('click', ()=>{
+  fTiles = shuffleArray(fTiles);
+  renderFinal();
+});
+
+document.getElementById('check3').addEventListener('click', ()=>{
+  const cur = Array.from(finalDrop.children).map(n=>n.textContent.trim());
+  if(cur.length !== finalWords.length){ alert('Place all words in the answer area.'); return; }
+  const seq = ["you","for","being","in","my","life"];
+  let ok = seq.every((w,i)=> w === cur[i]);
+  if(ok){
+    // final reveal
+    solvedStages++;
+    startReveal();
+  } else {
+    shake(finalDrop);
+    alert('Almost — try reading them out loud in order.');
+  }
+});
+
+/* --- Reveal sequence --- */
+function startReveal(){
+  // one-time check: allow reveal only once per session
+  if(localStorage.getItem('revealed')==='true'){
+    alert('You have already revealed the letter.');
+    return;
+  }
+  localStorage.setItem('revealed','true');
+  // animate ink drawing
+  ink.querySelector('svg').classList.add('play');
+  // prepare letter (handwritten-like)
+  const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nSayak ❤️`;
+  // reveal text with typing + highlight sync (simulate handwriting)
+  handText.textContent='';
+  document.getElementById('letterArea').classList.add('show');
+  // synchronized type and audio
+  let i=0;
+  const speed = 28;
+  const t = setInterval(()=>{
+    handText.textContent += letter[i] || '';
+    i++;
+    if(i>letter.length){
+      clearInterval(t);
+      // finish reveal
+      fireConfetti();
+    }
+  }, speed);
+  // play music (user gesture created by puzzle steps)
+  bgMusic.volume = 0.75;
+  bgMusic.currentTime = 0;
+  bgMusic.play().catch(()=>{/* ignore */});
+}
+
+/* --- keepsake download: draw a postcard on canvas --- */
+document.getElementById('downloadKeepsake').addEventListener('click', ()=>{
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200; canvas.height = 800;
+  const ctx = canvas.getContext('2d');
+  // background
+  ctx.fillStyle = '#071226'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  // card bg
+  ctx.fillStyle = '#07283a'; roundRect(ctx,60,60,1080,680,20); ctx.fill();
+  // title
+  ctx.fillStyle = '#fff'; ctx.font = '48px Pacifico'; ctx.fillText('For you, always',120,160);
+  // body
+  ctx.font = '24px Inter';
+  const body = 'Thank you for being in my life.\nYou turn ordinary days into something beautiful.\nAlways, Sayak';
+  wrapText(ctx, body, 120, 220, 960, 34);
+  // small footer
+  ctx.fillStyle = '#9aa6b2'; ctx.font = '18px Inter'; ctx.fillText('A small moment — saved just for you',120,680);
+  const url = canvas.toDataURL('image/png');
+  const a = document.createElement('a'); a.href = url; a.download = 'keepsake.png'; a.click();
+});
+
+/* replay audio */
+document.getElementById('replayAudio').addEventListener('click', ()=>{ bgMusic.currentTime=0; bgMusic.play().catch(()=>{}); });
+
+/* --- utilities --- */
+function shuffleArray(a){ return a.slice().sort(()=>Math.random()-0.5); }
+function shake(el){ el.style.transition='transform .06s'; el.style.transform='translateX(-6px)'; setTimeout(()=>el.style.transform='translateX(6px)',80); setTimeout(()=>el.style.transform='translateX(0)',160); setTimeout(()=>el.style.transition='',240); }
+
+function fireConfetti(){
+  const c = document.getElementById('confetti');
+  c.innerHTML='';
+  const colors = ['#ff6b81','#ffd166','#06d6a0','#4cc9f0','#a0c4ff'];
+  for(let i=0;i<36;i++){
+    const el = document.createElement('div');
+    el.style.position='absolute';
+    el.style.left = (10 + Math.random()*80)+'%';
+    el.style.top = ( -10 + Math.random()*2)+'%';
+    el.style.width = (8+Math.random()*12)+'px';
+    el.style.height = (10+Math.random()*14)+'px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.borderRadius='3px';
+    el.style.opacity = '0.95';
+    el.style.transform = 'rotate('+ (Math.random()*360) +'deg)';
+    el.style.transition = 'transform 1.8s linear, top 1.8s linear, left 1.8s linear, opacity 2s linear';
+    c.appendChild(el);
+    setTimeout(((el)=>{
+      return ()=> {
+        el.style.top = (60+Math.random()*40)+'%';
+        el.style.left = (10+Math.random()*80)+'%';
+        el.style.transform = 'rotate('+ (Math.random()*720) +'deg) translateY(40px)';
+        el.style.opacity = '0';
+      };
+    })(el), 60*i);
+  }
+  setTimeout(()=>{ c.innerHTML=''; }, 2600);
+}
+
+/* helpers for canvas text */
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  for(let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    const testWidth = metrics.width;
+    if (testWidth > maxWidth && n > 0) {
+      ctx.fillText(line, x, y);
+      line = words[n] + ' ';
+      y += lineHeight;
+    }
+    else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, x, y);
+}
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+/* idle gentle hint */
+let idle = setTimeout(()=>{ document.getElementById('hint1').click(); }, 22000);
+document.addEventListener('click', ()=>{ clearTimeout(idle); });
+
+</script>
+</body>
+</html>
