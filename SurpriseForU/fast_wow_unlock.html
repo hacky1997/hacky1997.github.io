@@ -248,16 +248,7 @@ let pieceWidth = 120, pieceHeight = 80;
 let bankContainer, slotsContainer;
 let selectedPiece = null;
 
-// Hardcoded correct background positions from your "got" values
-// const correctPositions = [
-//   '-100% 0%',    // slot 0
-//   '-50% 0%',     // slot 1
-//   '0% 0%',       // slot 2
-//   '-100% -100%', // slot 3
-//   '-50% -100%',  // slot 4
-//   '0% -100%'     // slot 5
-
-  const correctPositions = [
+const correctPositions = [
   '0% 0%',         // slot 0
   '-100% 0%',      // slot 1 (was previously slot 0’s position)
   '-50% 0%',       // slot 2 (was previously slot 1’s position)
@@ -265,8 +256,6 @@ let selectedPiece = null;
   '-100% -100%',   // slot 4 (was previously slot 5’s position)
   '-50% -100%'     // slot 5 (was previously slot 4’s position)
 ];
-
-// ];
 
 function createPuzzle() {
   puzzleWrap.innerHTML = '';
@@ -523,32 +512,32 @@ document.getElementById('check2').addEventListener('click', () => {
     }
   }
 
-  if (mismatches.length === 0) {
-    // solved — same success flow as your original code (no alerts)
-    stage2.classList.remove('active');
-    stage3.classList.add('active');
-    solvedStages++;
-    if (typeof showMemory === 'function') {
-      showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
-    }
-    document.getElementById('puzzleHint').textContent = 'Memory unlocked — proceed to the final stage.';
-    showPuzzleReport([]); // clear any previous debug box
-    return;
-  }
+  // if (mismatches.length === 0) {
+  //   // solved — same success flow as your original code (no alerts)
+  //   stage2.classList.remove('active');
+  //   stage3.classList.add('active');
+  //   solvedStages++;
+  //   if (typeof showMemory === 'function') {
+  //     showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
+  //   }
+  //   document.getElementById('puzzleHint').textContent = 'Memory unlocked — proceed to the final stage.';
+  //   showPuzzleReport([]); // clear any previous debug box
+  //   return;
+  // }
 
-  // not solved: show helpful debug overlay + gentle feedback
-  const lines = ['Not solved — mismatch summary:', ''];
-  mismatches.forEach(m => {
-    if (m.reason) {
-      lines.push(`slot ${m.slot}: ${m.reason}${m.comp ? ' ('+m.comp+')' : ''}`);
-    } else {
-      lines.push(`slot ${m.slot}: got ${m.got[0]}%,${m.got[1]}%  expected ${m.expected[0]}%,${m.expected[1]}%`);
-    }
-  });
-  showPuzzleReport(lines);
-  shake(slotsContainer);
-  document.getElementById('puzzleHint').textContent = 'Not quite — check the top-right debug box (or increase tolerance).';
-  console.log('puzzle debug', mismatches);
+  // // not solved: show helpful debug overlay + gentle feedback
+  // const lines = ['Not solved — mismatch summary:', ''];
+  // mismatches.forEach(m => {
+  //   if (m.reason) {
+  //     lines.push(`slot ${m.slot}: ${m.reason}${m.comp ? ' ('+m.comp+')' : ''}`);
+  //   } else {
+  //     lines.push(`slot ${m.slot}: got ${m.got[0]}%,${m.got[1]}%  expected ${m.expected[0]}%,${m.expected[1]}%`);
+  //   }
+  // });
+  // showPuzzleReport(lines);
+  // shake(slotsContainer);
+  // document.getElementById('puzzleHint').textContent = 'Not quite — check the top-right debug box (or increase tolerance).';
+  // console.log('puzzle debug', mismatches);
 });
 
 
