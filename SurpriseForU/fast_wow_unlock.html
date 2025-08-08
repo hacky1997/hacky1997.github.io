@@ -249,14 +249,24 @@ let bankContainer, slotsContainer;
 let selectedPiece = null;
 
 // Hardcoded correct background positions from your "got" values
-const correctPositions = [
-  '-100% 0%',    // slot 0
-  '-50% 0%',     // slot 1
-  '0% 0%',       // slot 2
-  '-100% -100%', // slot 3
-  '-50% -100%',  // slot 4
-  '0% -100%'     // slot 5
+// const correctPositions = [
+//   '-100% 0%',    // slot 0
+//   '-50% 0%',     // slot 1
+//   '0% 0%',       // slot 2
+//   '-100% -100%', // slot 3
+//   '-50% -100%',  // slot 4
+//   '0% -100%'     // slot 5
+
+  const correctPositions = [
+  '0% 0%',         // slot 0
+  '-100% 0%',      // slot 1 (was previously slot 0’s position)
+  '-50% 0%',       // slot 2 (was previously slot 1’s position)
+  '0% -100%',      // slot 3
+  '-100% -100%',   // slot 4 (was previously slot 5’s position)
+  '-50% -100%'     // slot 5 (was previously slot 4’s position)
 ];
+
+// ];
 
 function createPuzzle() {
   puzzleWrap.innerHTML = '';
