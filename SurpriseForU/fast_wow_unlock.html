@@ -178,7 +178,7 @@ const bgMusic = document.getElementById('bgMusic');
 let solvedStages = 0;
 
 // Stage1 word
-const word1 = "Pinkieee";
+const word1 = "Pinkiee";
 let tiles1 = shuffleArray(word1.split(''));
 const scrambleEl = document.getElementById('scramble1');
 
@@ -210,7 +210,7 @@ scrambleEl.addEventListener('click', (e)=>{
 });
 
 document.getElementById('hint1').addEventListener('click', ()=>{
-  alert('Hint: The sentence begins with the word "Thank".');
+  alert('Hint: The Word begins with the word "P".');
 });
 
 document.getElementById('check1').addEventListener('click', ()=>{
@@ -226,7 +226,136 @@ document.getElementById('check1').addEventListener('click', ()=>{
   }
 });
 
-/* Robust Stage2 check: compare computed background positions to expected positions */
+/* ---------- Stage 2: Memory Tile (DROP-IN REPLACEMENT) ---------- */
+const puzzleWrap = document.getElementById('puzzleWrap');
+let puzzleRows = 2, puzzleCols = 3;
+let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your image (kept exactly)
+let pieces = [];
+let selPiece = null;
+
+function fmtBgPos(col, row){
+  const x = (-(col * 100) / (puzzleCols - 1));
+  const y = (-(row * 100) / (puzzleRows - 1));
+  return `${Number(x.toFixed(4))}% ${Number(y.toFixed(4))}%`;
+}
+
+function createPuzzle(){
+  pieces = [];
+  puzzleWrap.innerHTML = '';
+  const total = puzzleRows * puzzleCols;
+  for(let i = 0; i < total; i++){
+    const box = document.createElement('div');
+    box.className = 'tile';
+    box.style.width = '120px';
+    box.style.height = '80px';
+    // keep your image exactly as-is
+    box.style.backgroundImage = `url(${puzzleImg})`;
+    const col = i % puzzleCols;
+    const row = Math.floor(i / puzzleCols);
+    box.style.backgroundSize = `${puzzleCols * 100}% ${puzzleRows * 100}%`;
+    box.style.backgroundPosition = fmtBgPos(col, row);
+    box.style.borderRadius = '6px';
+    box.style.cursor = 'pointer';
+    box.style.transition = 'transform .18s ease';
+    // store the original/correct position for this piece
+    box.dataset.correctIndex = String(i);
+    box.addEventListener('click', onPieceClick);
+    pieces.push(box);
+  }
+  const shuffled = shuffleArray(pieces.slice());
+  shuffled.forEach(p => puzzleWrap.appendChild(p));
+}
+createPuzzle();
+
+function onPieceClick(e){
+  const node = e.currentTarget;
+  if (!selPiece) {
+    selPiece = node;
+    selPiece.style.outline = '2px solid rgba(255,255,255,0.12)';
+    return;
+  }
+  if (selPiece === node) {
+    selPiece.style.outline = '';
+    selPiece = null;
+    return;
+  }
+  swapNodes(selPiece, node);
+  selPiece.style.outline = '';
+  selPiece = null;
+}
+
+function swapNodes(a, b){
+  const parent = a.parentNode;
+  if (!parent) return;
+  const aNext = a.nextSibling === b ? a : a.nextSibling;
+  parent.insertBefore(a, b);
+  parent.insertBefore(b, aNext);
+}
+
+/* shuffle / reset */
+document.getElementById('shuffle2').addEventListener('click', () => {
+  const nodes = Array.from(puzzleWrap.children);
+  const shuffled = shuffleArray(nodes);
+  puzzleWrap.innerHTML = '';
+  shuffled.forEach(n => puzzleWrap.appendChild(n));
+});
+document.getElementById('reset2').addEventListener('click', () => { createPuzzle(); });
+
+/* utility: compute expected background position for an index */
+function expectedBgForIndex(idx){
+  const col = idx % puzzleCols;
+  const row = Math.floor(idx / puzzleCols);
+  return fmtBgPos(col, row);
+}
+
+/* ---------- Minimal helper: parseBgPos(pos) ----------
+   Returns numeric percent array [x,y] or null */
+function parseBgPos(pos){
+  if(!pos || typeof pos !== 'string') return null;
+  // prefer percent matches
+  const pct = pos.match(/-?\d+(\.\d+)?%/g);
+  if(pct && pct.length >= 2){
+    return [ parseFloat(pct[0].replace('%','')), parseFloat(pct[1].replace('%','')) ];
+  }
+  // fallback to numeric values if present
+  const nums = pos.match(/-?\d+(\.\d+)?/g);
+  if(!nums || nums.length < 2) return null;
+  return [ parseFloat(nums[0]), parseFloat(nums[1]) ];
+}
+
+/* ---------- Minimal helper: showPuzzleReport(lines) ----------
+   Small debug overlay (top-right). Call with [] to remove. */
+function showPuzzleReport(lines){
+  const id = 'puzzleReport';
+  let report = document.getElementById(id);
+  if(!lines || lines.length === 0){
+    if(report) report.remove();
+    return;
+  }
+  if(!report){
+    report = document.createElement('pre');
+    report.id = id;
+    Object.assign(report.style, {
+      position: 'fixed',
+      right: '12px',
+      top: '12px',
+      maxWidth: '420px',
+      zIndex: 99999,
+      background: 'rgba(0,0,0,0.78)',
+      color: '#fff',
+      padding: '10px',
+      borderRadius: '8px',
+      fontSize: '12px',
+      lineHeight: '1.3',
+      whiteSpace: 'pre-wrap',
+      boxShadow: '0 6px 18px rgba(0,0,0,0.5)'
+    });
+    document.body.appendChild(report);
+  }
+  report.textContent = lines.join('\n');
+}
+
+/* ---------- Robust Stage2 check: compare computed background positions to expected positions ---------- */
 document.getElementById('check2').addEventListener('click', () => {
   const children = Array.from(puzzleWrap.children);
   const total = children.length;
@@ -259,7 +388,7 @@ document.getElementById('check2').addEventListener('click', () => {
   const solved = mapped.every((m, i) => m === i);
 
   if (solved) {
-    // success flow (exactly your existing success code)
+    // success flow (keeps your existing success code)
     stage2.classList.remove('active');
     stage3.classList.add('active');
     solvedStages++;
@@ -286,10 +415,15 @@ document.getElementById('check2').addEventListener('click', () => {
   alert('Looks close—try to get the photo pieces in order.');
 });
 
+/* ---------- small helpers (if not present elsewhere) ---------- */
+function shuffleArray(a){ return a.slice().sort(()=>Math.random()-0.5); }
+function shake(el){ el.style.transition='transform .06s'; el.style.transform='translateX(-6px)'; setTimeout(()=>el.style.transform='translateX(6px)',80); setTimeout(()=>el.style.transform='translateX(0)',160); setTimeout(()=>el.style.transition='',240); }
+
+
 /* --- Stage 3: Final arrange sentence --- */
 const finalTiles = document.getElementById('finalTiles');
 const finalDrop = document.getElementById('finalDrop');
-const finalWords = ["you","for","being","in","my","life"]; // "Thank" already used
+const finalWords = ["Thank","you","for","being","in","my","life"]; // "Thank" already used
 let fTiles = shuffleArray(finalWords.slice());
 function renderFinal(){
   finalTiles.innerHTML=''; finalDrop.innerHTML='';
@@ -321,7 +455,7 @@ document.getElementById('shuffle3').addEventListener('click', ()=>{
 document.getElementById('check3').addEventListener('click', ()=>{
   const cur = Array.from(finalDrop.children).map(n=>n.textContent.trim());
   if(cur.length !== finalWords.length){ alert('Place all words in the answer area.'); return; }
-  const seq = ["you","for","being","in","my","life"];
+  const seq = ["Thank","you","for","being","in","my","life"];
   let ok = seq.every((w,i)=> w === cur[i]);
   if(ok){
     // final reveal
@@ -379,7 +513,7 @@ document.getElementById('downloadKeepsake').addEventListener('click', ()=>{
   ctx.fillStyle = '#fff'; ctx.font = '48px Pacifico'; ctx.fillText('For you, always',120,160);
   // body
   ctx.font = '24px Inter';
-  const body = 'Thank you for being in my life.\nYou turn ordinary days into something beautiful.\nAlways, Sayak';
+  const body = 'Thank you for being in my life.\nYou turn ordinary days into something beautiful.\nAlways, Tintin';
   wrapText(ctx, body, 120, 220, 960, 34);
   // small footer
   ctx.fillStyle = '#9aa6b2'; ctx.font = '18px Inter'; ctx.fillText('A small moment — saved just for you',120,680);
