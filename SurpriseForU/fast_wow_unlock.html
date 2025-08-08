@@ -241,14 +241,22 @@ document.getElementById('check1').addEventListener('click', ()=>{
 });
 
 /* ---------- Stage 2: Manual slot-based puzzle ---------- */
-/* ---------- Stage 2: Manual slot-based puzzle ---------- */
 const puzzleWrap = document.getElementById('puzzleWrap');
 let puzzleRows = 2, puzzleCols = 3;
 let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your image
 let pieceWidth = 120, pieceHeight = 80;
 let bankContainer, slotsContainer;
 let selectedPiece = null;
-let correctPositions = []; // <-- store the correct background-positions
+
+// Hardcoded correct background positions from your "got" values
+const correctPositions = [
+  '-100% 0%',    // slot 0
+  '-50% 0%',     // slot 1
+  '0% 0%',       // slot 2
+  '-100% -100%', // slot 3
+  '-50% -100%',  // slot 4
+  '0% -100%'     // slot 5
+];
 
 function createPuzzle() {
   puzzleWrap.innerHTML = '';
@@ -258,9 +266,8 @@ function createPuzzle() {
   slotsContainer.className = 'slot-grid';
   slotsContainer.style.gridTemplateColumns = `repeat(${puzzleCols}, ${pieceWidth}px)`;
 
-  correctPositions = []; // reset for each puzzle creation
-
   const total = puzzleRows * puzzleCols;
+
   // create slots
   for (let i = 0; i < total; i++) {
     const slot = document.createElement('div');
@@ -279,19 +286,9 @@ function createPuzzle() {
     piece.className = 'tile-piece';
     piece.id = `piece-${i}`;
     piece.dataset.correctIndex = String(i);
-    const col = i % puzzleCols;
-    const row = Math.floor(i / puzzleCols);
     piece.style.backgroundImage = `url(${puzzleImg})`;
     piece.style.backgroundSize = `${puzzleCols * 100}% ${puzzleRows * 100}%`;
-
-    // store exact background-position
-    const x = (-(col * 100) / (puzzleCols - 1)) + '%';
-    const y = (-(row * 100) / (puzzleRows - 1)) + '%';
-    piece.style.backgroundPosition = `${x} ${y}`;
-
-    // save this position in the correctPositions array
-    correctPositions.push(`${x} ${y}`);
-
+    piece.style.backgroundPosition = correctPositions[i];
     piece.draggable = true;
     piece.addEventListener('dragstart', (ev) => {
       ev.dataTransfer.setData('text/plain', piece.id);
@@ -307,7 +304,7 @@ function createPuzzle() {
   const shuffled = shuffleArray(pieces);
   shuffled.forEach(p => bankContainer.appendChild(p));
 
-  // attach
+  // attach containers
   puzzleWrap.appendChild(slotsContainer);
   puzzleWrap.appendChild(bankContainer);
 
@@ -324,6 +321,7 @@ function placePieceInSlot(piece, slot) {
   const existing = slot.querySelector('.tile-piece');
 
   if (existing && existing !== piece) {
+    // swap: put existing back into source parent (if source was slot move it there, else move to bank)
     const sourceSlot = currentParent && currentParent.classList && currentParent.classList.contains('slot-cell') ? currentParent : null;
     if (sourceSlot) {
       sourceSlot.appendChild(existing);
@@ -333,6 +331,7 @@ function placePieceInSlot(piece, slot) {
       slot.appendChild(piece);
     }
   } else {
+    // empty slot — just append piece
     slot.appendChild(piece);
   }
   selectedPiece = null;
@@ -373,7 +372,18 @@ function updateSelectedVisual() {
   document.querySelectorAll('.tile-piece').forEach(p => p.classList.toggle('selected', p === selectedPiece));
 }
 
-// public controls:
+// shuffle utility
+function shuffleArray(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+
+// Public controls
 document.getElementById('shuffle2').addEventListener('click', () => {
   const pieces = Array.from(document.querySelectorAll('.tile-piece'));
   Array.from(slotsContainer.children).forEach(slot => {
@@ -397,16 +407,18 @@ document.getElementById('check2').addEventListener('click', () => {
   for (let i = 0; i < total; i++) {
     const slot = slotsContainer.children[i];
     const piece = slot.querySelector('.tile-piece');
-    if (!piece) { ok = false; break; }
+    if (!piece) {
+      ok = false;
+      break;
+    }
     const currentPos = piece.style.backgroundPosition.trim();
-    const correctPos = correctPositions[i].trim();
-    if (currentPos !== correctPos) {
+    if (currentPos !== correctPositions[i]) {
       ok = false;
       break;
     }
   }
-
   if (ok) {
+    // success: advance silently
     stage2.classList.remove('active');
     stage3.classList.add('active');
     solvedStages++;
@@ -422,7 +434,6 @@ document.getElementById('check2').addEventListener('click', () => {
 
 // initialize puzzle on load
 createPuzzle();
-
 
 /* ---------- helpers for Stage2 visual check (add these just before the new check2 handler) ---------- */
 function parseBgPos(pos){
