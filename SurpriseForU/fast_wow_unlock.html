@@ -241,152 +241,94 @@ document.getElementById('check1').addEventListener('click', ()=>{
 });
 
 /* ---------- Stage 2: Manual slot-based puzzle ---------- */
-const puzzleWrap = document.getElementById('puzzleWrap');
-let puzzleRows = 2, puzzleCols = 3;
-let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your image
-let pieceWidth = 120, pieceHeight = 80;
-let bankContainer, slotsContainer;
-let selectedPiece = null;
+/* ---------- visual-order aware check2 (DROP-IN REPLACEMENT) ---------- */
+document.getElementById('check2').addEventListener('click', () => {
+  const children = Array.from(slotsContainer.children); // slotsContainer from createPuzzle()
+  const total = children.length;
+  const tol = 1.5; // percent tolerance; increase slightly if tiny rounding diffs appear
 
-function createPuzzle() {
-  puzzleWrap.innerHTML = '';
-  bankContainer = document.createElement('div');
-  bankContainer.className = 'pieces-bank';
-  slotsContainer = document.createElement('div');
-  slotsContainer.className = 'slot-grid';
-  slotsContainer.style.gridTemplateColumns = `repeat(${puzzleCols}, ${pieceWidth}px)`;
+  // 1) compute on-screen rects for each slot and sort by top then left (visual order)
+  const rects = children.map(child => ({ el: child, rect: child.getBoundingClientRect() }));
+  // row tolerance: half the typical slot height (gives leeway for sub-pixel/top rounding)
+  const heights = rects.map(r => r.rect.height).sort((a,b)=>a-b);
+  const medianHeight = heights.length ? heights[Math.floor(heights.length/2)] : 0;
+  const rowTolPx = Math.max(4, medianHeight / 2); // at least 4px tolerance
 
-  const total = puzzleRows * puzzleCols;
-  // create slots
-  for (let i = 0; i < total; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'slot-cell';
-    slot.dataset.index = String(i);
-    slot.addEventListener('dragover', (ev) => ev.preventDefault());
-    slot.addEventListener('drop', onDropToSlot);
-    slot.addEventListener('click', () => onSlotClick(slot));
-    slotsContainer.appendChild(slot);
+  const sortedByVisual = rects.slice().sort((A, B) => {
+    if (Math.abs(A.rect.top - B.rect.top) > rowTolPx) return A.rect.top - B.rect.top;
+    return A.rect.left - B.rect.left;
+  });
+
+  // map each slot element -> visual index
+  const visualIndexForSlot = new Map();
+  sortedByVisual.forEach((item, idx) => visualIndexForSlot.set(item.el, idx));
+
+  // 2) build expected background-position percent pairs FOR visual indices (0..total-1)
+  const expectedByVisual = [];
+  for (let vis = 0; vis < total; vis++) {
+    const col = vis % puzzleCols;
+    const row = Math.floor(vis / puzzleCols);
+    const ex = (-(col * 100) / Math.max(1, (puzzleCols - 1)));
+    const ey = (-(row * 100) / Math.max(1, (puzzleRows - 1)));
+    expectedByVisual[vis] = [ Number(ex.toFixed(4)), Number(ey.toFixed(4)) ];
   }
 
-  // create pieces (bank) — will be shuffled
-  const pieces = [];
+  // 3) compare each slot's current piece computed background-position to expected (based on visual index)
+  const mismatches = [];
   for (let i = 0; i < total; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'tile-piece';
-    piece.id = `piece-${i}`;
-    piece.dataset.correctIndex = String(i);
-    const col = i % puzzleCols;
-    const row = Math.floor(i / puzzleCols);
-    piece.style.backgroundImage = `url(${puzzleImg})`;
-    piece.style.backgroundSize = `${puzzleCols * 100}% ${puzzleRows * 100}%`;
-    // background-position like earlier (percent values)
-    const x = (-(col * 100) / (puzzleCols - 1)) + '%';
-    const y = (-(row * 100) / (puzzleRows - 1)) + '%';
-    piece.style.backgroundPosition = `${x} ${y}`;
-    piece.draggable = true;
-    piece.addEventListener('dragstart', (ev) => {
-      ev.dataTransfer.setData('text/plain', piece.id);
-    });
-    piece.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      onPieceClick(piece);
-    });
-    pieces.push(piece);
-  }
+    const slot = children[i];
+    const piece = slot.querySelector('.tile-piece');
+    const visIdx = visualIndexForSlot.get(slot);
+    const exp = typeof visIdx === 'number' ? expectedByVisual[visIdx] : null;
 
-  // shuffle into bank
-  const shuffled = shuffleArray(pieces);
-  shuffled.forEach(p => bankContainer.appendChild(p));
-
-  // attach
-  puzzleWrap.appendChild(slotsContainer);
-  puzzleWrap.appendChild(bankContainer);
-
-  // deselect state
-  selectedPiece = null;
-  updateSelectedVisual();
-}
-
-// place piece into a slot (handles swapping)
-function placePieceInSlot(piece, slot) {
-  if (!piece || !slot) return;
-
-  const currentParent = piece.parentElement;
-  const existing = slot.querySelector('.tile-piece');
-
-  if (existing && existing !== piece) {
-    // swap: put existing back into source parent (if source was slot move it there, else move to bank)
-    const sourceSlot = currentParent && currentParent.classList && currentParent.classList.contains('slot-cell') ? currentParent : null;
-    if (sourceSlot) {
-      // swap positions between slots
-      sourceSlot.appendChild(existing);
-      slot.replaceChild(piece, existing);
-    } else {
-      // piece came from bank: move existing back to bank, put piece into slot
-      bankContainer.appendChild(existing);
-      slot.appendChild(piece);
+    if (!piece) {
+      mismatches.push({ slot: i, reason: 'empty' });
+      continue;
     }
-  } else {
-    // empty slot — just append piece
-    slot.appendChild(piece);
+    if (!exp) {
+      mismatches.push({ slot: i, reason: 'no-visual-index' });
+      continue;
+    }
+
+    const comp = window.getComputedStyle(piece).backgroundPosition;
+    const pos = parseBgPos(comp);
+    if (!pos) {
+      mismatches.push({ slot: i, reason: 'no-bg-pos', comp });
+      continue;
+    }
+    if (Math.abs(pos[0] - exp[0]) > tol || Math.abs(pos[1] - exp[1]) > tol) {
+      mismatches.push({ slot: i, got: pos, expected: exp, visIndex: visIdx });
+    }
   }
-  selectedPiece = null;
-  updateSelectedVisual();
-}
 
-function onDropToSlot(e) {
-  e.preventDefault();
-  const id = e.dataTransfer.getData('text/plain');
-  const piece = document.getElementById(id);
-  if (!piece) return;
-  const slot = e.currentTarget;
-  placePieceInSlot(piece, slot);
-}
-
-function onPieceClick(piece) {
-  // select the piece (toggle)
-  if (selectedPiece === piece) {
-    selectedPiece = null;
-  } else {
-    selectedPiece = piece;
-  }
-  updateSelectedVisual();
-}
-
-function onSlotClick(slot) {
-  if (selectedPiece) {
-    placePieceInSlot(selectedPiece, slot);
+  // 4) success or debug overlay (no alerts)
+  if (mismatches.length === 0) {
+    stage2.classList.remove('active');
+    stage3.classList.add('active');
+    solvedStages++;
+    if (typeof showMemory === 'function') {
+      showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
+    }
+    document.getElementById('puzzleHint').textContent = 'Memory unlocked — proceed to the final stage.';
+    showPuzzleReport([]); // clear debug box
     return;
   }
-  // if no selected piece, clicking a slot will pick its piece (if any)
-  const existing = slot.querySelector('.tile-piece');
-  if (existing) {
-    selectedPiece = existing;
-    updateSelectedVisual();
-  }
-}
 
-function updateSelectedVisual() {
-  // clear all
-  document.querySelectorAll('.tile-piece').forEach(p => p.classList.toggle('selected', p === selectedPiece));
-}
-
-// public controls:
-document.getElementById('shuffle2').addEventListener('click', () => {
-  // gather all pieces back to bank and shuffle
-  const pieces = Array.from(document.querySelectorAll('.tile-piece'));
-  // clear slots
-  Array.from(slotsContainer.children).forEach(slot => {
-    const child = slot.querySelector('.tile-piece');
-    if (child) bankContainer.appendChild(child);
+  // Not solved: show helpful debug lines
+  const lines = ['Not solved — mismatch summary:', ''];
+  mismatches.forEach(m => {
+    if (m.reason) {
+      lines.push(`slot ${m.slot}: ${m.reason}${m.comp ? ' (' + m.comp + ')' : ''}`);
+    } else {
+      lines.push(`slot ${m.slot} (visualIdx ${m.visIndex}): got ${m.got[0]}%,${m.got[1]}%  expected ${m.expected[0]}%,${m.expected[1]}%`);
+    }
   });
-  // shuffle order in bank
-  const shuffled = shuffleArray(pieces);
-  bankContainer.innerHTML = '';
-  shuffled.forEach(p => bankContainer.appendChild(p));
-  selectedPiece = null;
-  updateSelectedVisual();
+  showPuzzleReport(lines);
+  shake(slotsContainer);
+  document.getElementById('puzzleHint').textContent = 'Not quite — check the top-right debug box (visual mapping applied).';
+  console.log('puzzle debug', mismatches);
 });
+
 
 document.getElementById('reset2').addEventListener('click', () => {
   createPuzzle();
