@@ -229,7 +229,8 @@ document.getElementById('check1').addEventListener('click', ()=>{
 /* --- Stage 2: Jigsaw (uses a placeholder image from picsum) --- */
 const puzzleWrap = document.getElementById('puzzleWrap');
 let puzzleRows = 2, puzzleCols=3;
-let puzzleImg = 'https://picsum.photos/id/1011/800/500'; // scenic placeholder
+// let puzzleImg = 'https://picsum.photos/id/1011/800/500'; // scenic placeholder
+let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg';
 let pieces = [];
 
 function createPuzzle(){
@@ -279,21 +280,66 @@ document.getElementById('check2').addEventListener('click', ()=>{
 });
 
 /* make puzzle pieces draggable to reorder (swap on click) */
+// let selPiece = null;
+// puzzleWrap.addEventListener('click', (e)=>{
+//   if(!e.target.dataset) return;
+//   if(selPiece===null){ selPiece = e.target; selPiece.style.outline='2px solid rgba(255,255,255,0.12)'; }
+//   else {
+//     // swap nodes visually
+//     const a = selPiece;
+//     const b = e.target;
+//     const aClone = a.cloneNode(true);
+//     const bClone = b.cloneNode(true);
+//     a.parentNode.replaceChild(aClone, a);
+//     b.parentNode.replaceChild(bClone, b);
+//     selPiece = null;
+//   }
+// });
+
+/* --- Better swap logic (no cloning) --- */
 let selPiece = null;
-puzzleWrap.addEventListener('click', (e)=>{
-  if(!e.target.dataset) return;
-  if(selPiece===null){ selPiece = e.target; selPiece.style.outline='2px solid rgba(255,255,255,0.12)'; }
-  else {
-    // swap nodes visually
-    const a = selPiece;
-    const b = e.target;
-    const aClone = a.cloneNode(true);
-    const bClone = b.cloneNode(true);
-    a.parentNode.replaceChild(aClone, a);
-    b.parentNode.replaceChild(bClone, b);
+puzzleWrap.addEventListener('click', (e) => {
+  const node = e.target;
+  // ensure it's one of the piece boxes
+  if (!node || !node.dataset || typeof node.dataset.idx === 'undefined') return;
+
+  if (selPiece === null) {
+    // pick first
+    selPiece = node;
+    selPiece.style.outline = '2px solid rgba(255,255,255,0.12)';
+  } else if (selPiece === node) {
+    // deselect if same clicked
+    selPiece.style.outline = '';
+    selPiece = null;
+  } else {
+    // swap dataset.idx (logical index) and backgroundPosition (visual slice)
+    const tmpIdx = selPiece.dataset.idx;
+    selPiece.dataset.idx = node.dataset.idx;
+    node.dataset.idx = tmpIdx;
+
+    const tmpBg = selPiece.style.backgroundPosition;
+    selPiece.style.backgroundPosition = node.style.backgroundPosition;
+    node.style.backgroundPosition = tmpBg;
+
+    selPiece.style.outline = '';
     selPiece = null;
   }
 });
+
+/* --- Shuffle: shuffle actual DOM children (robust) --- */
+document.getElementById('shuffle2').addEventListener('click', () => {
+  // read current children
+  const nodes = Array.from(puzzleWrap.children);
+  const shuffled = shuffleArray(nodes);
+  puzzleWrap.innerHTML = '';
+  shuffled.forEach(n => puzzleWrap.appendChild(n));
+});
+
+/* --- Reset: recreate the puzzle pieces --- */
+document.getElementById('reset2').addEventListener('click', () => {
+  createPuzzle();
+});
+
 
 /* --- Stage 3: Final arrange sentence --- */
 const finalTiles = document.getElementById('finalTiles');
