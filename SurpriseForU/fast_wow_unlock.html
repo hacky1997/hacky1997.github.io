@@ -227,117 +227,224 @@ document.getElementById('check1').addEventListener('click', ()=>{
 });
 
 /* --- Stage 2: Jigsaw (uses a placeholder image from picsum) --- */
-const puzzleWrap = document.getElementById('puzzleWrap');
-let puzzleRows = 2, puzzleCols=3;
-// let puzzleImg = 'https://picsum.photos/id/1011/800/500'; // scenic placeholder
-let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg';
-let pieces = [];
+// const puzzleWrap = document.getElementById('puzzleWrap');
+// let puzzleRows = 2, puzzleCols=3;
+// // let puzzleImg = 'https://picsum.photos/id/1011/800/500'; // scenic placeholder
+// let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg';
+// let pieces = [];
 
-function createPuzzle(){
-  pieces = [];
-  puzzleWrap.innerHTML='';
-  const total = puzzleRows*puzzleCols;
-  for(let i=0;i<total;i++){
-    const box = document.createElement('div');
-    box.style.width = '120px';
-    box.style.height = '80px';
-    box.style.backgroundImage = `url(${puzzleImg})`;
-    // background position
-    const col = i % puzzleCols;
-    const row = Math.floor(i / puzzleCols);
-    const bw = 100/puzzleCols;
-    const bh = 100/puzzleRows;
-    box.style.backgroundSize = `${puzzleCols*100}% ${puzzleRows*100}%`;
-    box.style.backgroundPosition = `${-(col*100)/(puzzleCols-1)}% ${-(row*100)/(puzzleRows-1)}%`;
-    box.style.borderRadius='6px';
-    box.style.cursor='pointer';
-    box.style.transition='transform .18s ease';
-    box.dataset.idx = i;
-    pieces.push(box);
-  }
-  pieces = shuffleArray(pieces);
-  pieces.forEach(p=> puzzleWrap.appendChild(p));
-}
-createPuzzle();
+// function createPuzzle(){
+//   pieces = [];
+//   puzzleWrap.innerHTML='';
+//   const total = puzzleRows*puzzleCols;
+//   for(let i=0;i<total;i++){
+//     const box = document.createElement('div');
+//     box.style.width = '120px';
+//     box.style.height = '80px';
+//     box.style.backgroundImage = `url(${puzzleImg})`;
+//     // background position
+//     const col = i % puzzleCols;
+//     const row = Math.floor(i / puzzleCols);
+//     const bw = 100/puzzleCols;
+//     const bh = 100/puzzleRows;
+//     box.style.backgroundSize = `${puzzleCols*100}% ${puzzleRows*100}%`;
+//     box.style.backgroundPosition = `${-(col*100)/(puzzleCols-1)}% ${-(row*100)/(puzzleRows-1)}%`;
+//     box.style.borderRadius='6px';
+//     box.style.cursor='pointer';
+//     box.style.transition='transform .18s ease';
+//     box.dataset.idx = i;
+//     pieces.push(box);
+//   }
+//   pieces = shuffleArray(pieces);
+//   pieces.forEach(p=> puzzleWrap.appendChild(p));
+// }
+// createPuzzle();
 
-document.getElementById('shuffle2').addEventListener('click', ()=>{ pieces = shuffleArray(pieces); puzzleWrap.innerHTML=''; pieces.forEach(p=> puzzleWrap.appendChild(p));});
-document.getElementById('reset2').addEventListener('click', ()=>{ createPuzzle(); });
-document.getElementById('check2').addEventListener('click', ()=>{
-  // check if correct order (by dataset idx)
-  const current = Array.from(puzzleWrap.children).map(n=> parseInt(n.dataset.idx));
-  let correct = true;
-  for(let i=0;i<current.length;i++){ if(current[i] !== i){ correct=false; break; } }
-  if(correct){
-    stage2.classList.remove('active');
-    stage3.classList.add('active');
-    solvedStages++;
-    // show little photo memory text
-    alert('Memory unlocked: "That evening by the park"');
-  } else {
-    shake(puzzleWrap);
-    alert('Looks close—try to get the photo pieces in order.');
-  }
-});
+// document.getElementById('shuffle2').addEventListener('click', ()=>{ pieces = shuffleArray(pieces); puzzleWrap.innerHTML=''; pieces.forEach(p=> puzzleWrap.appendChild(p));});
+// document.getElementById('reset2').addEventListener('click', ()=>{ createPuzzle(); });
+// document.getElementById('check2').addEventListener('click', ()=>{
+//   // check if correct order (by dataset idx)
+//   const current = Array.from(puzzleWrap.children).map(n=> parseInt(n.dataset.idx));
+//   let correct = true;
+//   for(let i=0;i<current.length;i++){ if(current[i] !== i){ correct=false; break; } }
+//   if(correct){
+//     stage2.classList.remove('active');
+//     stage3.classList.add('active');
+//     solvedStages++;
+//     // show little photo memory text
+//     alert('Memory unlocked: "That evening by the park"');
+//   } else {
+//     shake(puzzleWrap);
+//     alert('Looks close—try to get the photo pieces in order.');
+//   }
+// });
 
-/* make puzzle pieces draggable to reorder (swap on click) */
+// /* make puzzle pieces draggable to reorder (swap on click) */
+// // let selPiece = null;
+// // puzzleWrap.addEventListener('click', (e)=>{
+// //   if(!e.target.dataset) return;
+// //   if(selPiece===null){ selPiece = e.target; selPiece.style.outline='2px solid rgba(255,255,255,0.12)'; }
+// //   else {
+// //     // swap nodes visually
+// //     const a = selPiece;
+// //     const b = e.target;
+// //     const aClone = a.cloneNode(true);
+// //     const bClone = b.cloneNode(true);
+// //     a.parentNode.replaceChild(aClone, a);
+// //     b.parentNode.replaceChild(bClone, b);
+// //     selPiece = null;
+// //   }
+// // });
+
+// /* --- Better swap logic (no cloning) --- */
 // let selPiece = null;
-// puzzleWrap.addEventListener('click', (e)=>{
-//   if(!e.target.dataset) return;
-//   if(selPiece===null){ selPiece = e.target; selPiece.style.outline='2px solid rgba(255,255,255,0.12)'; }
-//   else {
-//     // swap nodes visually
-//     const a = selPiece;
-//     const b = e.target;
-//     const aClone = a.cloneNode(true);
-//     const bClone = b.cloneNode(true);
-//     a.parentNode.replaceChild(aClone, a);
-//     b.parentNode.replaceChild(bClone, b);
+// puzzleWrap.addEventListener('click', (e) => {
+//   const node = e.target;
+//   // ensure it's one of the piece boxes
+//   if (!node || !node.dataset || typeof node.dataset.idx === 'undefined') return;
+
+//   if (selPiece === null) {
+//     // pick first
+//     selPiece = node;
+//     selPiece.style.outline = '2px solid rgba(255,255,255,0.12)';
+//   } else if (selPiece === node) {
+//     // deselect if same clicked
+//     selPiece.style.outline = '';
+//     selPiece = null;
+//   } else {
+//     // swap dataset.idx (logical index) and backgroundPosition (visual slice)
+//     const tmpIdx = selPiece.dataset.idx;
+//     selPiece.dataset.idx = node.dataset.idx;
+//     node.dataset.idx = tmpIdx;
+
+//     const tmpBg = selPiece.style.backgroundPosition;
+//     selPiece.style.backgroundPosition = node.style.backgroundPosition;
+//     node.style.backgroundPosition = tmpBg;
+
+//     selPiece.style.outline = '';
 //     selPiece = null;
 //   }
 // });
 
-/* --- Better swap logic (no cloning) --- */
-let selPiece = null;
-puzzleWrap.addEventListener('click', (e) => {
-  const node = e.target;
-  // ensure it's one of the piece boxes
-  if (!node || !node.dataset || typeof node.dataset.idx === 'undefined') return;
+// /* --- Shuffle: shuffle actual DOM children (robust) --- */
+// document.getElementById('shuffle2').addEventListener('click', () => {
+//   // read current children
+//   const nodes = Array.from(puzzleWrap.children);
+//   const shuffled = shuffleArray(nodes);
+//   puzzleWrap.innerHTML = '';
+//   shuffled.forEach(n => puzzleWrap.appendChild(n));
+// });
 
-  if (selPiece === null) {
-    // pick first
+// /* --- Reset: recreate the puzzle pieces --- */
+// document.getElementById('reset2').addEventListener('click', () => {
+//   createPuzzle();
+// });
+
+  /* --- Stage 2: Memory Tile (REPLACE your existing Stage 2 block with this) --- */
+const puzzleWrap = document.getElementById('puzzleWrap');
+let puzzleRows = 2, puzzleCols = 3;
+let puzzleImg = 'https://i.ibb.co/JSKDRqV/Fam.jpg'; // your photo
+let pieces = [];
+let selPiece = null;
+
+function createPuzzle(){
+  pieces = [];
+  puzzleWrap.innerHTML = '';
+  const total = puzzleRows * puzzleCols;
+
+  for(let i = 0; i < total; i++){
+    const box = document.createElement('div');
+    box.className = 'tile'; // keeps your visual styles
+    box.style.width = '120px';
+    box.style.height = '80px';
+    box.style.backgroundImage = `url(${puzzleImg})`;
+
+    const col = i % puzzleCols;
+    const row = Math.floor(i / puzzleCols);
+
+    box.style.backgroundSize = `${puzzleCols * 100}% ${puzzleRows * 100}%`;
+    box.style.backgroundPosition = `${-(col * 100) / (puzzleCols - 1)}% ${-(row * 100) / (puzzleRows - 1)}%`;
+
+    box.style.borderRadius = '6px';
+    box.style.cursor = 'pointer';
+    box.style.transition = 'transform .18s ease';
+
+    // store the original/correct position for this piece
+    box.dataset.correctIndex = String(i);
+
+    // click handler uses DOM swapping (keeps DOM order in sync with visuals)
+    box.addEventListener('click', onPieceClick);
+
+    pieces.push(box);
+  }
+
+  // shuffle and append to DOM (DOM order is the current order)
+  const shuffled = shuffleArray(pieces.slice());
+  shuffled.forEach(p => puzzleWrap.appendChild(p));
+}
+createPuzzle();
+
+/* click to select first piece, click second piece to swap (DOM swap) */
+function onPieceClick(e){
+  const node = e.currentTarget;
+  if (!selPiece) {
     selPiece = node;
     selPiece.style.outline = '2px solid rgba(255,255,255,0.12)';
-  } else if (selPiece === node) {
-    // deselect if same clicked
-    selPiece.style.outline = '';
-    selPiece = null;
-  } else {
-    // swap dataset.idx (logical index) and backgroundPosition (visual slice)
-    const tmpIdx = selPiece.dataset.idx;
-    selPiece.dataset.idx = node.dataset.idx;
-    node.dataset.idx = tmpIdx;
-
-    const tmpBg = selPiece.style.backgroundPosition;
-    selPiece.style.backgroundPosition = node.style.backgroundPosition;
-    node.style.backgroundPosition = tmpBg;
-
-    selPiece.style.outline = '';
-    selPiece = null;
+    return;
   }
-});
+  if (selPiece === node) {
+    selPiece.style.outline = '';
+    selPiece = null;
+    return;
+  }
 
-/* --- Shuffle: shuffle actual DOM children (robust) --- */
+  // swap DOM nodes (visual and DOM positions swap together)
+  swapNodes(selPiece, node);
+
+  selPiece.style.outline = '';
+  selPiece = null;
+}
+
+/* reliable DOM swap function */
+function swapNodes(a, b){
+  const parent = a.parentNode;
+  const aNext = (a.nextSibling === b) ? a : a.nextSibling;
+  parent.insertBefore(a, b);
+  parent.insertBefore(b, aNext);
+}
+
+/* shuffle uses current DOM children (robust) */
 document.getElementById('shuffle2').addEventListener('click', () => {
-  // read current children
   const nodes = Array.from(puzzleWrap.children);
   const shuffled = shuffleArray(nodes);
   puzzleWrap.innerHTML = '';
   shuffled.forEach(n => puzzleWrap.appendChild(n));
 });
 
-/* --- Reset: recreate the puzzle pieces --- */
+/* reset recreates puzzle cleanly */
 document.getElementById('reset2').addEventListener('click', () => {
   createPuzzle();
+});
+
+/* check: verify that each DOM child holds the piece that belongs to that slot */
+document.getElementById('check2').addEventListener('click', () => {
+  const children = Array.from(puzzleWrap.children);
+  const correct = children.every((child, idx) => parseInt(child.dataset.correctIndex, 10) === idx);
+
+  if (correct) {
+    stage2.classList.remove('active');
+    stage3.classList.add('active');
+    solvedStages++;
+    // replace alert with a nicer in-page reveal if you used showMemory()
+    if (typeof showMemory === 'function') {
+      showMemory({ img: puzzleImg, caption: 'That evening by the park', audio: '' });
+    } else {
+      alert('Memory unlocked: "That evening by the park"');
+    }
+  } else {
+    shake(puzzleWrap);
+    alert('Looks close—try to get the photo pieces in order.');
+  }
 });
 
 
