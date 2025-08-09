@@ -96,8 +96,9 @@
     <header>
       <div class="avatar">SN</div>
       <div>
-        <h1 id="title">A small surprise — for you Pinki ❤</h1>
-        <p class="lead">Solve the little moments—each solved piece reveals a memory. Finish reading a short letter and listen.</p>
+        <h1 id="title">A heartfelt surprise — just for you, Pinki ❤️</h1>
+<!--         <p class="lead">Solve the little moments—each solved piece reveals a memory. Finish reading a short letter and listen.</p> -->
+        <p class="lead">Unwrap tiny moments — every solved piece unlocks a cherished memory. Complete the puzzle, read the letter, and let the music tell our story.</p>
       </div>
     </header>
 
@@ -127,7 +128,7 @@
             <button class="ghost" id="reset2">Reset</button>
             <button id="check2">Check</button>
           </div>
-          <div class="small-hint" id="puzzleHint">Tip: Drag a tile to a slot, or click a tile then click a slot to place it. Drop into an occupied slot to swap.</div>
+          <div class="small-hint" id="puzzleHint">Tip: Drag a tile to a slot, or click a tile, then click a slot to place it. Drop into an occupied slot to swap.</div>
         </div>
 
         <!-- Stage 3 -->
@@ -179,7 +180,7 @@
 
     <div class="confetti" id="confetti"></div>
 
-    <footer class="sig">Made with care — one small moment at a time 💌 from Babai</footer>
+    <footer class="sig">Made with care — one small moment at a time from Babai 💌</footer>
   </div>
 </div>
 
@@ -337,7 +338,7 @@ function placePieceInSlot(piece, slot) {
   const existing = slot.querySelector('.tile-piece');
 
   if (existing && existing !== piece) {
-    // swap: put existing back into source parent (if source was slot move it there, else move to bank)
+    // swap: put existing back into source parent (if source was slot, move it there, else move to bank)
     const sourceSlot = currentParent && currentParent.classList && currentParent.classList.contains('slot-cell') ? currentParent : null;
     if (sourceSlot) {
       sourceSlot.appendChild(existing);
