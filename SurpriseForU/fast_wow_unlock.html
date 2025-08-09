@@ -607,33 +607,63 @@ document.getElementById('check3').addEventListener('click', ()=>{
 });
 
 /* --- Reveal sequence --- */
-function startReveal(){
+function startReveal() {
   console.log('startReveal called');
-  // if(localStorage.getItem('revealed')==='true'){
-  //   console.log('Already revealed - skipping');
-  //   return;
-  // }
-  localStorage.setItem('revealed','true');
-  ink.querySelector('svg').classList.add('play');
+
+  // localStorage check removed to allow repeated reveals
+  // localStorage.setItem('revealed', 'true');  // You may comment this out or remove if you don't want to store
+
+  // Play SVG animation
+  const svgElement = ink.querySelector('svg');
+  if (svgElement) {
+    svgElement.classList.add('play');
+  } else {
+    console.warn('SVG element inside "ink" not found.');
+  }
+
   const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nSayak ❤️`;
-  handText.textContent='';
-  document.getElementById('letterArea').classList.add('show');
-  let i=0;
+
+  // Clear previous text content
+  handText.textContent = '';
+
+  // Show letter area
+  const letterArea = document.getElementById('letterArea');
+  if (letterArea) {
+    letterArea.classList.add('show');
+  } else {
+    console.warn('"letterArea" element not found.');
+  }
+
+  let i = 0;
   const speed = 28;
-  const t = setInterval(()=>{
-    handText.textContent += letter[i] || '';
-    i++;
-    if(i>letter.length){
-      clearInterval(t);
+
+  // Clear any previous interval to avoid multiple simultaneous intervals
+  if (startReveal._intervalId) {
+    clearInterval(startReveal._intervalId);
+  }
+
+  startReveal._intervalId = setInterval(() => {
+    if (i < letter.length) {
+      handText.textContent += letter[i];
+      i++;
+    } else {
+      clearInterval(startReveal._intervalId);
+      startReveal._intervalId = null;
       fireConfetti();
       console.log('Reveal finished and confetti triggered');
     }
   }, speed);
-  bgMusic.volume = 0.75;
-  bgMusic.currentTime = 0;
-  bgMusic.play().catch((e)=>{
-    console.log('Audio play error:', e);
-  });
+
+  // Play background music with error handling
+  if (bgMusic) {
+    bgMusic.volume = 0.75;
+    bgMusic.currentTime = 0;
+    bgMusic.play().catch((e) => {
+      console.log('Audio play error:', e);
+    });
+  } else {
+    console.warn('bgMusic element not found.');
+  }
 }
 
 /* --- keepsake download: draw a postcard on canvas --- */
