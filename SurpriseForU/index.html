@@ -173,9 +173,7 @@
     </div>
 
     <audio id="bgMusic" preload="auto" crossorigin="anonymous">
-      <!-- If you host the mp3 in your repo, replace the <source> src below with your hosted path
-           e.g. <source src="/assets/audio/song.mp3" type="audio/mpeg"> -->
-      <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
+      <source src="https://hacky1997.github.io/SurpriseForU/assets/audio/Music.mp3" type="audio/mpeg">
     </audio>
 
     <div class="confetti" id="confetti"></div>
@@ -185,14 +183,6 @@
 </div>
 
 <script>
-/* -------------------------------------------------------------------
-   Fixed and audited script
-   - single shuffleArray/shake helpers
-   - single createPuzzle() call
-   - single check2 handler using correctPositions
-   - startReveal runs reliably every time (no persistent localStorage block)
-   - small defensive checks and logs
-   ------------------------------------------------------------------*/
 
 /* helpers */
 function shuffleArray(a){
