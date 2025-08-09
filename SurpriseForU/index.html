@@ -39,6 +39,11 @@
     display: none;
   }
 
+  /* preserve newline characters and allow wrapping */
+  #handText {
+    white-space: pre-wrap;
+  }
+  
   header{display:flex;gap:14px;align-items:center;padding:8px 12px}
   .avatar{width:72px;height:72px;border-radius:12px;background:linear-gradient(135deg,#0aa5a5,#2bb0ff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:22px;flex:0 0 72px}
   h1{font-size:20px;margin:0;color:#fff}
@@ -519,10 +524,10 @@ function startReveal() {
     console.warn('SVG element inside "ink" not found.');
   }
 
-  const letter = 'Dearest Baal,<br/><br/>Thank you for being the universe’s gift.<br><br>You turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.<br><br>I feel blessed every day that the universe led you to walk beside me.<br><br>Always,<br>Tintin ❤️';
+  const letter = 'Dearest Baal,\n\nThank you for being the universe’s gift.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel blessed every day that the universe led you to walk beside me.\n\nAlways,\nTintin ❤️';
   
   // Clear previous text content
-  handText.innerHTML = '';
+  handText.textContent = '';
   document.getElementById('letterArea').classList.add('show');
 
   // Show letter area
@@ -543,7 +548,7 @@ function startReveal() {
   const speed = 28;
   startReveal._intervalId = setInterval(() => {
     if (i < letter.length) {
-      handText.innerHTML += letter[i];
+      handText.textContent += letter[i];
       i++;
     } else {
       clearInterval(startReveal._intervalId);
