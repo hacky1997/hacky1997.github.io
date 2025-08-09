@@ -582,27 +582,35 @@ document.getElementById('shuffle3').addEventListener('click', ()=>{
 });
 
 document.getElementById('check3').addEventListener('click', ()=>{
+  console.log('Check3 clicked');
+
   const cur = Array.from(finalDrop.children).map(n=>n.textContent.trim());
+  console.log('Current words:', cur);
+  console.log('Expected words length:', finalWords.length);
+
   if(cur.length !== finalWords.length){
-    // Instead of alert, show some gentle UI feedback or do nothing
-    // You can optionally add a subtle message here instead of alert
+    console.log('Not all words placed yet');
     return;
   }
   const seq = ["Thank","you","for","being","in","my","life"];
   let ok = seq.every((w,i)=> w === cur[i]);
+  console.log('Check sequence correct:', ok);
+
   if(ok){
     solvedStages++;
+    console.log('Puzzle solved! Starting reveal');
     startReveal();
   } else {
     shake(finalDrop);
-    // Instead of alert, you can add some UI feedback here
+    console.log('Wrong order - shake triggered');
   }
 });
 
 /* --- Reveal sequence --- */
 function startReveal(){
-  // No alert for already revealed, just skip
+  console.log('startReveal called');
   if(localStorage.getItem('revealed')==='true'){
+    console.log('Already revealed - skipping');
     return;
   }
   localStorage.setItem('revealed','true');
@@ -618,11 +626,14 @@ function startReveal(){
     if(i>letter.length){
       clearInterval(t);
       fireConfetti();
+      console.log('Reveal finished and confetti triggered');
     }
   }, speed);
   bgMusic.volume = 0.75;
   bgMusic.currentTime = 0;
-  bgMusic.play().catch(()=>{/* ignore */});
+  bgMusic.play().catch((e)=>{
+    console.log('Audio play error:', e);
+  });
 }
 
 /* --- keepsake download: draw a postcard on canvas --- */
