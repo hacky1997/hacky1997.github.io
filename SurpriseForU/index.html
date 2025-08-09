@@ -543,7 +543,7 @@ function startReveal() {
   const speed = 28;
   startReveal._intervalId = setInterval(() => {
     if (i < letter.length) {
-      handText.textContent += letter[i];
+      handText.innerHTML += letter[i];
       i++;
     } else {
       clearInterval(startReveal._intervalId);
