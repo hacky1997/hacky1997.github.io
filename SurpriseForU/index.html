@@ -98,7 +98,7 @@
       <div>
         <h1 id="title">A heartfelt surprise — just for you, Pinki ❤️</h1>
 <!--         <p class="lead">Solve the little moments—each solved piece reveals a memory. Finish reading a short letter and listen.</p> -->
-        <p class="lead">Unwrap tiny moments — every solved piece unlocks a cherished memory. Complete the puzzle, read the letter, and let the music tell our story.</p>
+        <p class="lead">Unwrap moments — each solved piece reveals a surprise memory. Solve, read, listen, and enjoy.</p>
       </div>
     </header>
 
@@ -106,8 +106,8 @@
       <div class="left">
         <!-- Stage 1 -->
         <div class="panel stage active" id="stage1">
-          <div style="font-weight:700">Stage 1 — Quick Warmup</div>
-          <div style="margin-top:8px;color:var(--muted)">Unscramble a short word that starts the sentence.</div>
+          <div style="font-weight:700">Stage 1 — The Spark</div>
+          <div style="margin-top:8px;color:var(--muted)">Unscramble the short word that starts the sentence.</div>
           <div class="tiles" id="scramble1"></div>
           <div class="actions">
             <button id="check1">Check</button>
@@ -117,8 +117,8 @@
 
         <!-- Stage 2 -->
         <div class="panel stage" id="stage2" style="margin-top:12px">
-          <div style="font-weight:700">Stage 2 — Memory Tile</div>
-          <div style="margin-top:8px;color:var(--muted)">Piece the photo together — drag pieces into the slots below in the right order.</div>
+          <div style="font-weight:700">Stage 2 — The Memory Mosaic</div>
+          <div style="margin-top:8px;color:var(--muted)">Rebuild the moment — drag the pieces to their rightful places.</div>
 
           <!-- puzzle container: slots + bank will be created by JS -->
           <div id="puzzleWrap" style="margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:10px;"></div>
@@ -133,7 +133,7 @@
 
         <!-- Stage 3 -->
         <div class="panel stage" id="stage3" style="margin-top:12px">
-          <div style="font-weight:700">Stage 3 — Final Sentence</div>
+          <div style="font-weight:700">Stage 3 — Unlock the Sentence/div>
           <div style="margin-top:8px;color:var(--muted)">Arrange the words to complete the sentence.</div>
           <div class="tiles" id="finalTiles"></div>
           <div style="margin-top:12px" class="dropzone" id="finalDrop"></div>
@@ -147,13 +147,13 @@
       <div class="right">
         <div class="panel" style="display:flex;flex-direction:column;gap:12px;align-items:center;min-height:320px;justify-content:center">
           <div style="text-align:center">
-            <div style="font-weight:700;color:#fff">Final Reveal</div>
-            <div style="color:var(--muted);margin-top:6px">When all stages are complete, a letter will be written out and music will play.</div>
+            <div style="font-weight:700;color:#fff">Unveil the Magic</div>
+            <div style="color:var(--muted);margin-top:6px">Only when all puzzles surrender will the hidden letter emerge — and the music awaken secrets long kept.</div>
           </div>
 
           <div class="reveal-wrap" id="revealWrap" style="width:100%;margin-top:8px;">
             <div style="text-align:center;margin-bottom:10px;">
-              <div class="handwritten breath" id="handTitle">For you, always</div>
+              <div class="handwritten breath" id="handTitle">A gift from Nancy to yours 😛</div>
             </div>
             <div class="reveal-text" id="letterArea" aria-live="polite">
               <div id="handText" style="font-size:15px;color:#f2f7fb;line-height:1.6;min-height:220px;padding:12px;border-radius:8px"></div>
@@ -167,8 +167,8 @@
           </div>
 
           <div style="width:100%;text-align:center;margin-top:8px">
-            <button id="downloadKeepsake" class="ghost">Download Keepsake</button>
-            <button id="replayAudio" class="ghost">Play Again</button>
+            <button id="downloadKeepsake" class="ghost">Save this Memory? 💌</button>
+            <button id="replayAudio" class="ghost">Hear It Once More 💖</button>
           </div>
         </div>
       </div>
@@ -180,7 +180,7 @@
 
     <div class="confetti" id="confetti"></div>
 
-    <footer class="sig">Made with care — one small moment at a time from Babai 💌</footer>
+    <footer class="sig">Crafted with love — a tiny moment, a lifetime of warmth from Babai 💌</footer>
   </div>
 </div>
 
@@ -519,8 +519,8 @@ function startReveal() {
     console.warn('SVG element inside "ink" not found.');
   }
 
-  const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nTintin ❤️`;
-
+  const letter = `Dearest Baal,\n\nThank you for being the universe’s gift.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\n feel blessed every day that the universe led you to walk beside me.\n\nAlways,\nTintin ❤️`;
+  
   // Clear previous text content
   handText.textContent = '';
   document.getElementById('letterArea').classList.add('show');
@@ -578,7 +578,7 @@ document.getElementById('downloadKeepsake').addEventListener('click', () => {
   ctx.fillStyle = '#fff'; ctx.font = '48px Pacifico'; ctx.fillText('For you, always', 120, 160);
   // body
   ctx.font = '24px Inter';
-  const body = 'My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nTintin ❤️';
+  const body = 'My dearest,\n\nThank you for being in my life so far.\n\nYou make ordinary moments magical, and your care fills my heart in ways words can’t fully capture.\n\nI am endlessly grateful that fate — or perhaps the stars themselves—aligned to bring you to me.\n\nBeyond,\nTintin ❤️';
   wrapText(ctx, body, 120, 220, 960, 34);
   // small footer
   ctx.fillStyle = '#9aa6b2'; ctx.font = '18px Inter'; ctx.fillText('A small moment — saved just for you', 120, 680);
