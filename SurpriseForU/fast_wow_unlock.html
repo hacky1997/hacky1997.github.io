@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Unlock your gift — A small surprise from Tintin</title>
+<title>Unlock your gift ❤ — A small surprise from Tintin</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -94,7 +94,7 @@
     <header>
       <div class="avatar">SN</div>
       <div>
-        <h1 id="title">A small surprise — for you Pinki</h1>
+        <h1 id="title">A small surprise — for you Pinki ❤</h1>
         <p class="lead">Solve the little moments—each solved piece reveals a memory. Finish reading a short letter and listen.</p>
       </div>
     </header>
@@ -125,7 +125,7 @@
             <button class="ghost" id="reset2">Reset</button>
             <button id="check2">Check</button>
           </div>
-          <div class="small-hint" id="puzzleHint">Tip: Drag a tile to a slot, or click a tile then click a slot to place it. Drop onto an occupied slot to swap.</div>
+          <div class="small-hint" id="puzzleHint">Tip: Drag a tile to a slot, or click a tile then click a slot to place it. Drop into an occupied slot to swap.</div>
         </div>
 
         <!-- Stage 3 -->
@@ -581,47 +581,48 @@ document.getElementById('shuffle3').addEventListener('click', ()=>{
   renderFinal();
 });
 
-document.getElementById('check3').addEventListener('click', () => {
-  const cur = Array.from(finalDrop.children).map(n => n.textContent.trim());
-  if (cur.length !== finalWords.length) {
-    alert('Place all words in the answer area.');
+document.getElementById('check3').addEventListener('click', ()=>{
+  const cur = Array.from(finalDrop.children).map(n=>n.textContent.trim());
+  if(cur.length !== finalWords.length){
+    // Instead of alert, show some gentle UI feedback or do nothing
+    // You can optionally add a subtle message here instead of alert
     return;
   }
-  const seq = ["Thank", "you", "for", "being", "in", "my", "life"];
-  let ok = seq.every((w, i) => w === cur[i]);
-  if (ok) {
+  const seq = ["Thank","you","for","being","in","my","life"];
+  let ok = seq.every((w,i)=> w === cur[i]);
+  if(ok){
     solvedStages++;
-    startReveal();  // <== no alert here, just startReveal
+    startReveal();
   } else {
     shake(finalDrop);
-    alert('Almost — try reading them out loud in order.');
+    // Instead of alert, you can add some UI feedback here
   }
 });
 
 /* --- Reveal sequence --- */
-function startReveal() {
-  if (localStorage.getItem('revealed') === 'true') {
-    alert('You have already revealed the letter.');
+function startReveal(){
+  // No alert for already revealed, just skip
+  if(localStorage.getItem('revealed')==='true'){
     return;
   }
-  localStorage.setItem('revealed', 'true');
+  localStorage.setItem('revealed','true');
   ink.querySelector('svg').classList.add('play');
   const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nSayak ❤️`;
-  handText.textContent = '';
+  handText.textContent='';
   document.getElementById('letterArea').classList.add('show');
-  let i = 0;
+  let i=0;
   const speed = 28;
-  const t = setInterval(() => {
+  const t = setInterval(()=>{
     handText.textContent += letter[i] || '';
     i++;
-    if (i > letter.length) {
+    if(i>letter.length){
       clearInterval(t);
       fireConfetti();
     }
   }, speed);
   bgMusic.volume = 0.75;
   bgMusic.currentTime = 0;
-  bgMusic.play().catch(() => { /* ignore */ });
+  bgMusic.play().catch(()=>{/* ignore */});
 }
 
 /* --- keepsake download: draw a postcard on canvas --- */
