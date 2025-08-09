@@ -505,11 +505,11 @@ const replayBtn = document.getElementById('replayAudio');
   
 function startReveal() {
   console.log('startReveal called');
-  if(localStorage.getItem('revealed') === 'true'){
-    alert('You have already revealed the letter.');
-    return;
-  }
-  localStorage.setItem('revealed', 'true');
+  // if(localStorage.getItem('revealed') === 'true'){
+  //   alert('You have already revealed the letter.');
+  //   return;
+  // }
+  // localStorage.setItem('revealed', 'true');
 
   // Play SVG animation
   const svgElement = ink.querySelector('svg');
