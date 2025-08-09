@@ -609,10 +609,10 @@ document.getElementById('check3').addEventListener('click', ()=>{
 /* --- Reveal sequence --- */
 function startReveal(){
   console.log('startReveal called');
-  if(localStorage.getItem('revealed')==='true'){
-    console.log('Already revealed - skipping');
-    return;
-  }
+  // if(localStorage.getItem('revealed')==='true'){
+  //   console.log('Already revealed - skipping');
+  //   return;
+  // }
   localStorage.setItem('revealed','true');
   ink.querySelector('svg').classList.add('play');
   const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nSayak ❤️`;
