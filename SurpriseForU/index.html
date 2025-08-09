@@ -502,9 +502,6 @@ document.getElementById('check3').addEventListener('click', ()=>{
 function startReveal() {
   console.log('startReveal called');
 
-  // allow reveal to run every time; if you want to persist "once only" behavior re-enable localStorage logic
-  // localStorage.setItem('revealed','true');
-
   // Play SVG animation
   const svgElement = ink.querySelector('svg');
   if (svgElement) {
@@ -513,7 +510,7 @@ function startReveal() {
     console.warn('SVG element inside "ink" not found.');
   }
 
-  const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nSayak ❤️`;
+  const letter = `My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nTintin ❤️`;
 
   // Clear previous text content
   handText.textContent = '';
@@ -571,7 +568,7 @@ document.getElementById('downloadKeepsake').addEventListener('click', () => {
   ctx.fillStyle = '#fff'; ctx.font = '48px Pacifico'; ctx.fillText('For you, always', 120, 160);
   // body
   ctx.font = '24px Inter';
-  const body = 'Thank you for being in my life.\nYou turn ordinary days into something beautiful.\nAlways, Tintin';
+  const body = 'My dearest,\n\nThank you for being in my life.\n\nYou turn ordinary days into something beautiful. Your kindness, laughter, and quiet strength mean more to me than words can say.\n\nI feel lucky every day that you chose to walk beside me.\n\nAlways,\nTintin ❤️';
   wrapText(ctx, body, 120, 220, 960, 34);
   // small footer
   ctx.fillStyle = '#9aa6b2'; ctx.font = '18px Inter'; ctx.fillText('A small moment — saved just for you', 120, 680);
