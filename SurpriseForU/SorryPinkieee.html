@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- 1. Mobile-friendly viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secret Message game - Mithai 💖</title>
+
+  <!-- 2. Original fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Bangers&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Homemade+Apple&display=swap" rel="stylesheet">
+
+  <style>
+    /* — Base & layout — */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      position: relative;
+      overflow-x: hidden;
+      background: #171720;
+      color: #efefef;
+      font-family: 'Cutive Mono', monospace;
+      font-size: 2rem;
+    }
+
+    /* — Personal intro at top — */
+    .intro {
+      font-family: 'Homemade Apple', cursive;
+      text-align: center;
+      font-size: 2.5rem;
+      padding: 1rem;
+      color: #f8b195;
+    }
+
+    /* — Main title — */
+    .codepen-title {
+      font-family: 'Bangers', cursive;
+      font-size: 4rem;
+      text-align: center;
+      color: #e6c9fc;
+      padding: 50px 1rem 25px;
+    }
+
+    /* — Secret layers styling — */
+    .secret {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: pre-wrap;
+      text-align: center;
+      line-height: 1;
+      max-width: 90%;
+    }
+    .secret1 {
+      top: 50vh;    /* fixed at center */
+      position: fixed;
+      z-index: 1;
+    }
+    .secret2 {
+      top: 150vh;   /* one full screen below */
+      position: absolute;
+      z-index: 2;
+    }
+    .hidden { color: transparent; }
+
+    /* — Spacer for scrolling — */
+    .content-placeholder { height: 200vh; }
+
+    /* — Mobile adjustments — */
+    @media (max-width:480px) {
+      body { font-size: 1.5rem; }
+      .secret { width: 90%; }
+    }
+
+    /* — Playful pulsing cursor on hover — 
+    .secret:hover {
+      cursor: url('data:image/svg+xml;utf8,\
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">\
+          <circle cx="16" cy="16" r="14" fill="none" stroke="hotpink" stroke-width="4"/>\
+        </svg>'
+      ) 16 16, auto;
+      animation: heartbeat 1s infinite;
+    }
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      50%     { transform: scale(1.05); }
+    } */
+  </style>
+</head>
+<body>
+
+  <!-- Personal greeting -->
+  <div class="intro">🔎 Hey Pikieee, up for a quick brain-teaser?🧠</div>
+
+  <!-- Scroll prompt -->
+  <div class="codepen-title">💞 Scroll to reveal your secret message 🥰</div>
+
+  <!-- Puzzle layers -->
+  <div class="secret secret1"></div>
+  <div class="secret secret2"></div>
+
+  <!-- Spacer for exactly one screen scroll -->
+  <div class="content-placeholder"></div>
+
+  <script>
+    // 3. Your decoded secret message with call-to-action
+    var decoded =
+      "Eii baal, eta pore jodi ek2 smile ashe and raag kome then amk ping koris..." +
+      "Sorry re… please ektu hese de... please please ettuuuu? 🙈 I promise I’ll behave (for at least… 5 minutes😏)" +
+      "2i amr sathe aj opore ktha e bollina tmn... khub dukkho legeche kintu amr... amake dukkho dili to pinki?😭😭";
+
+    // 4. Render function: hides even or odd chars per layer
+    function render(selector, hideEven) {
+      var chars = decoded.split("");
+      for (var i = 0; i < chars.length; i++) {
+        if ((i % 2 === 0) === hideEven) {
+          chars[i] = '<span class="hidden">' + chars[i] + '</span>';
+        }
+      }
+      document.querySelector(selector).innerHTML = chars.join("");
+    }
+
+    // 5. Populate both layers
+    render('.secret1', true);   // hide evens
+    render('.secret2', false);  // hide odds
+  </script>
+</body>
+</html>
