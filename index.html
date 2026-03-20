@@ -53,8 +53,16 @@ body.h #cur-r{width:52px;height:52px;border-color:rgba(201,145,58,0.5)}
 
 /* ── NAV ── */
 nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1.6rem 6vw;opacity:0}
-.n-id{font-size:.88rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);text-decoration:none;transition:color .2s}
-.n-id em{color:var(--gold);font-style:normal}
+.n-id{font-size:1.1rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);text-decoration:none;transition:color .2s}
+.n-id em{font-style:normal;display:inline-block;width:4px;height:4px;background:var(--gold);border-radius:50%;vertical-align:middle;margin-left:2px;cursor:pointer;
+  box-shadow:0 0 4px 1px rgba(201,145,58,.55);
+  animation:ndotglow 2.5s ease-in-out infinite;
+  transition:box-shadow .18s}
+.n-id em:hover{box-shadow:0 0 12px 4px rgba(201,145,58,.9),0 0 22px 7px rgba(201,145,58,.4)}
+@keyframes ndotglow{
+  0%,100%{box-shadow:0 0 4px 1px rgba(201,145,58,.45)}
+  50%{box-shadow:0 0 10px 3px rgba(201,145,58,.85),0 0 18px 6px rgba(201,145,58,.3)}
+}
 .n-links{display:flex;gap:2.5rem;list-style:none}
 .n-links a{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#A8A49E;text-decoration:none;transition:color .22s}
 .n-links a:hover{color:var(--ink)}
@@ -183,7 +191,8 @@ main{position:relative;z-index:2}
 /* ══════════════════════════════════
    CONTACT
 ══════════════════════════════════ */
-#contact{padding:5rem 6vw 4rem;border-top:1px solid var(--bdr)}
+#contact{min-height:100vh;display:flex;align-items:center;border-top:1px solid var(--bdr)}
+
 .ct-eyebrow{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-bottom:3rem;display:flex;align-items:center;gap:.8rem}
 .ct-eyebrow em{color:var(--gold);font-style:normal;text-shadow:0 0 12px rgba(201,145,58,0.5)}
 .ct-h{font-family:var(--fd);font-size:clamp(5rem,13vw,13rem);line-height:.86;letter-spacing:-.01em;color:var(--ink);margin-bottom:3rem}
@@ -316,14 +325,15 @@ footer{
 
 <!-- NAV -->
 <nav id="nav">
-  <a href="#" class="n-id">SN<em>.</em></a>
+  <a href="#" class="n-id">SN<em onclick="document.querySelector('#contact').scrollIntoView({behavior:'smooth'})"></em></a>
   <ul class="n-links">
+    <li><a href="#numbers">Impact</a></li>
+    <li><a href="#arc">Journey</a></li>
     <li><a href="#work">Work</a></li>
     <li><a href="#research">Research</a></li>
     <li><a href="#recognition">Recognition</a></li>
-    <li><a href="#contact">Contact</a></li>
   </ul>
-  <a href="#contact" class="n-cta">Open to Work →</a>
+  <a href="#contact" class="n-cta">Get In Touch →</a>
 </nav>
 
 <main>
@@ -331,7 +341,7 @@ footer{
 <!-- ══ SCENE 1: HERO ══ -->
 <section id="hero">
   <div class="h-l">
-    <div class="h-tag"><span class="h-tag-dot"></span>AI + QA Automation Engineer · Hyderabad</div>
+    <div class="h-tag"><span class="h-tag-dot"></span>AI + QA Automation Engineer</div>
     <h1 class="h-name"><span class="ln">SAYAK</span><span class="ln">NASKAR.</span></h1>
     <div class="h-lines">
       <div class="h-line"><span class="n">01</span>Bug hunter.</div>
@@ -384,8 +394,7 @@ footer{
       <p class="ap-desc">I spent three years breaking the systems everyone else assumed were safe. Nokia, SAP, Yahoo Paranoid — none of them were.</p>
       <div class="ap-tags">
         <span class="ap-tag gold">CVE-2020-8825</span>
-        <span class="ap-tag">Nokia · SAP · Yahoo</span>
-        <span class="ap-tag">SQL Injection · XSS</span>
+        <span class="ap-tag">Nokia · SAP · Yahoo · Dutch Govt. and many more</span>
         <span class="ap-tag">Responsible Disclosure</span>
       </div>
     </div>
@@ -397,22 +406,23 @@ footer{
       <p class="ap-desc">I built the frameworks. The kind that don't just test software — they tell you where the next failure will come from before it happens.</p>
       <div class="ap-tags">
         <span class="ap-tag gold">$2M+ pipeline</span>
-        <span class="ap-tag">BFSI Scale</span>
-        <span class="ap-tag">Selenium · Java · Maven</span>
-        <span class="ap-tag">300+ automated scenarios</span>
+        <span class="ap-tag">TCS BFSI Scale</span>
+        <span class="ap-tag">Selenium · Jave · Maven · Junit</span>
+        <span class="ap-tag">1500+ automated Testcases</span>
+        <span class="ap-tag">300+ critical automated scenarios</span>
       </div>
     </div>
 
     <div class="arc-panel">
       <div class="ap-num">03</div>
-      <div class="ap-era">2024 — Present</div>
+      <div class="ap-era">2024 — 2026</div>
       <div class="ap-title">The<br/><span class="it">Leader.</span></div>
-      <p class="ap-desc">Government infrastructure. Zero tolerance margins. Teams that I led grew into teams that didn't need me — which is exactly the point.</p>
+      <p class="ap-desc">US Government infrastructure. Zero tolerance margins. Teams that I led grew into teams that didn't need me — which is exactly the point.</p>
       <div class="ap-tags">
         <span class="ap-tag gold">Government scale</span>
         <span class="ap-tag">QA Strategy</span>
         <span class="ap-tag">Team Leadership</span>
-        <span class="ap-tag">Azure · Jenkins · Docker</span>
+        <span class="ap-tag">Azure · Jenkins · Docker · Log4J</span>
       </div>
     </div>
 
@@ -420,7 +430,7 @@ footer{
       <div class="ap-num">04</div>
       <div class="ap-era">2025 — Present</div>
       <div class="ap-title">The<br/><span class="it">Researcher.</span></div>
-      <p class="ap-desc">M.Tech at IIIT Guwahati. Two papers under review. Teaching machines the hardest thing in QA: knowing what they don't know.</p>
+      <p class="ap-desc">M.Tech @ IIIT Guwahati. Two papers under review. Teaching machines the hardest thing in QA: knowing what they don't know.</p>
       <div class="ap-tags">
         <span class="ap-tag gold">EAAAI 2026</span>
         <span class="ap-tag gold">IEEE TAC 2026</span>
@@ -452,10 +462,10 @@ footer{
           <span class="wi-sector">Public Sector · U.S. State Government</span>
           <p class="wi-desc">Quality architecture for mission-critical citizen-facing platforms. Built for zero tolerance — because when the system fails, real people don't get paid.</p>
           <div class="wi-links">
-            <a href="#contact" class="wi-link">Request Resume ↗</a>
+            <a href="mailto:Sayaknaskar@gmail.com" class="wi-link">Request Resume ↗</a>
           </div>
         </div>
-        <div class="wi-yr">2024–Present</div>
+        <div class="wi-yr">2024–2026</div>
       </div>
 
       <div class="wi rx d1">
@@ -465,7 +475,7 @@ footer{
           <span class="wi-sector">BFSI · Enterprise Scale</span>
           <p class="wi-desc">Automation framework for a global financial platform. Built to outlast the team that built it — and it did, securing three additional enterprise engagements.</p>
           <div class="wi-links">
-            <a href="#contact" class="wi-link">Request Resume ↗</a>
+            <a href="https://drive.google.com/drive/u/0/folders/1HHIJBenkH8Zuf4TZMvTFPuDLJdV-3-6R" class="wi-link">Request Resume ↗</a>
             <a href="https://github.com/hacky1997" target="_blank" class="wi-link">Framework on GitHub ↗</a>
           </div>
         </div>
@@ -485,7 +495,7 @@ footer{
 
       <div class="rc rx">
         <div class="rc-line"></div>
-        <div class="rc-badge">Under Review</div>
+        <div class="rc-badge">AI Contextual Framework</div>
         <span class="rc-venue">EAAAI (ex-EANN) 2026</span>
         <div class="rc-title">CenterDistill: Weakly-Supervised Distillation for Ambiguity-Aware Cross-Lingual QA</div>
         <p class="rc-desc">A framework that teaches QA models to handle ambiguity — to know when to answer, when to ask, and when to say nothing at all. The hardest problem in cross-lingual question answering.</p>
@@ -497,11 +507,12 @@ footer{
 
       <div class="rc rx d2">
         <div class="rc-line"></div>
-        <div class="rc-badge">Under Review</div>
+        <div class="rc-badge">Emotion Classification Becnhmark</div>
         <span class="rc-venue">IEEE Transactions on Affective Computing · Q1</span>
         <div class="rc-title">EMBER: Multi-Seed, Multi-Condition Study of Prompt-Based Emotion Classification</div>
         <p class="rc-desc">Proving that prompt design, not parameter count, is what determines emotion classification quality. A systematic benchmark across five transformer architectures that changes the question.</p>
         <div class="rc-foot">
+          <a href="#" onclick="return false;" class="rc-link" style="opacity:.55;cursor:not-allowed;border-style:dashed" title="Link will be added once published">Link coming soon ⏳</a>
           <span class="rc-status">Under Review</span>
         </div>
       </div>
@@ -520,7 +531,7 @@ footer{
       <div class="rec-item rx">
         <div class="ri-l">
           <div class="ri-title">CVE-2020-8825</div>
-          <div class="ri-sub">Nokia · Responsible Disclosure · Security Research</div>
+          <div class="ri-sub">PHP Vanilla · Responsible Disclosure &nbsp;·&nbsp; <a href="https://www.cve.org/CVERecord?id=CVE-2020-8825" target="_blank" style="color:var(--gold);text-decoration:none;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(201,145,58,.3);padding:.18rem .5rem;transition:background .22s" onmouseover="this.style.background='rgba(201,145,58,.1)'" onmouseout="this.style.background='transparent'">View CVE Record ↗</a></div>
         </div>
         <div class="ri-r">
           <span class="ri-yr">2020</span>
@@ -531,7 +542,7 @@ footer{
       <div class="rec-item rx d1">
         <div class="ri-l">
           <div class="ri-title">Oracle CloudWorld 2023</div>
-          <div class="ri-sub">Selected Presenter · 10,000+ Attendees · Innovation Showcase</div>
+          <div class="ri-sub">TCS Partnership· 10,000+ Attendees · Innovation Showcase</div>
         </div>
         <div class="ri-r">
           <span class="ri-yr">2023</span>
@@ -546,17 +557,16 @@ footer{
         </div>
         <div class="ri-r">
           <span class="ri-yr">2022</span>
-          <span class="ri-badge">Excellence</span>
+          <span class="ri-badge">Excellence Award</span>
         </div>
       </div>
 
     </div>
   </div>
 </section>
-
 <!-- ══ SCENE 7: CONTACT ══ -->
 <section id="contact">
-  <div style="max-width:1000px;margin:0 auto;padding:0 6vw">
+  <div style="max-width:1000px;margin:0 auto;padding:0 6vw;width:100%">
     <div class="ct-eyebrow rx"><em>07</em>Get in touch</div>
     <h2 class="ct-h rx d1">Open to<br/><span class="it">leadership.</span></h2>
     <div class="ct-links rx d2">
@@ -574,7 +584,7 @@ footer{
       </a>
       <a href="tel:+919932666111" class="ct-l">
         <span class="ct-ll">Phone</span>
-        <span class="ct-lv">+91 99326 66111</span>
+        <span class="ct-lv">+91 9932666111</span>
       </a>
     </div>
     <p class="ct-quote rx d3">
@@ -588,52 +598,12 @@ footer{
 </main>
 
 <footer>
-  <div class="ft-top">
-
-    <!-- Brand column -->
-    <div class="ft-brand">
-      <span class="ft-brand-name">SN<em>.</em></span>
-      <span class="ft-brand-role">AI + QA Automation Engineer</span>
-      <p class="ft-brand-bio">I spent years breaking systems. Now I make sure yours never breaks.</p>
-    </div>
-
-    <!-- Navigation column -->
-    <div>
-      <span class="ft-col-title">Navigate</span>
-      <ul class="ft-links">
-        <li><a href="#numbers">Impact</a></li>
-        <li><a href="#arc">My Journey</a></li>
-        <li><a href="#work">Work</a></li>
-        <li><a href="#research">Research</a></li>
-        <li><a href="#recognition">Recognition</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </div>
-
-    <!-- Connect column -->
-    <div>
-      <span class="ft-col-title">Connect</span>
-      <ul class="ft-links">
-        <li><a href="mailto:Sayaknaskar@gmail.com">Sayaknaskar@gmail.com</a></li>
-        <li><a href="https://linkedin.com/in/sayak-naskar" target="_blank">LinkedIn</a></li>
-        <li><a href="https://github.com/hacky1997" target="_blank">GitHub</a></li>
-        <li><a href="tel:+919932666111">+91 99326 66111</a></li>
-      </ul>
-      <div class="ft-status" style="margin-top:1.8rem">
-        <span class="ft-status-dot"></span>
-        <span class="ft-status-text">Open to leadership roles</span>
-      </div>
-    </div>
-
-  </div>
-
   <div class="ft-bottom">
     <span class="ft-copy">© 2026 <em>Sayak Naskar</em> · Hyderabad, India</span>
     <span class="ft-tagline">Test like a hacker, build like an engineer.</span>
-    <div class="ft-socials">
-      <a href="https://linkedin.com/in/sayak-naskar" target="_blank">LinkedIn</a>
-      <a href="https://github.com/hacky1997" target="_blank">GitHub</a>
-      <a href="mailto:Sayaknaskar@gmail.com">Email</a>
+    <div class="ft-status" style="margin-top:0">
+      <span class="ft-status-dot"></span>
+      <span class="ft-status-text">Open to leadership roles</span>
     </div>
   </div>
 </footer>
