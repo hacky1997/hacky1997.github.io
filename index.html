@@ -32,11 +32,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fm);overflow-x:hidd
 ::-webkit-scrollbar-track{background:var(--bg)}
 
 /* ── CURSOR ── */
-#cur{position:fixed;z-index:9999;pointer-events:none;mix-blend-mode:difference}
+#cur{position:fixed;z-index:9999;pointer-events:none}
 #cur-d{width:7px;height:7px;background:#fff;border-radius:50%;position:absolute;transform:translate(-50%,-50%);transition:width .18s,height .18s}
 #cur-r{width:36px;height:36px;border:1px solid rgba(255,255,255,0.22);border-radius:50%;position:absolute;transform:translate(-50%,-50%);transition:width .28s cubic-bezier(.25,.1,.25,1),height .28s,border-color .28s}
-body.h #cur-d{width:12px;height:12px}
-body.h #cur-r{width:56px;height:56px;border-color:rgba(201,145,58,0.7)}
+body.h #cur-d{width:12px;height:12px;background:var(--gold)}
+body.h #cur-r{width:52px;height:52px;border-color:rgba(201,145,58,0.5)}
 
 /* ── LOADER ── */
 #loader{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;flex-direction:column;justify-content:flex-end;padding:10vw 8vw;overflow:hidden}
