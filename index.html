@@ -217,6 +217,53 @@ footer{border-top:1px solid var(--bdr);padding:2rem 6vw}
 .rx{opacity:0;transform:translateY(20px);transition:opacity .75s cubic-bezier(0,0,.2,1),transform .75s cubic-bezier(0,0,.2,1)}
 .rx.on{opacity:1;transform:none}
 .rx.d1{transition-delay:.1s}.rx.d2{transition-delay:.2s}.rx.d3{transition-delay:.3s}.rx.d4{transition-delay:.4s}
+
+/* ══════════════════════════════════
+   MOBILE — 480px and below
+══════════════════════════════════ */
+@media(max-width:480px){
+  /* Hero name — prevent overflow */
+  .h-name{font-size:clamp(3.6rem,17vw,5rem);margin-bottom:2rem}
+
+  /* Hero tag — keep dot and text on same line */
+  .h-tag{letter-spacing:.12em;flex-wrap:nowrap;margin-bottom:2rem}
+
+  /* Hero lines — tighten */
+  .h-lines{margin-bottom:2.5rem}
+
+  /* Hero buttons — prevent inner text wrap */
+  .btn-p,.btn-g{padding:.72rem 1.4rem;font-size:.68rem;white-space:nowrap}
+  .h-acts{gap:.8rem;margin-bottom:2rem;flex-wrap:nowrap}
+
+  /* Hero micro — tighten letter spacing to prevent ugly wrap */
+  .h-micro{letter-spacing:.08em;font-size:.62rem}
+  .h-micro span{margin:0 .35rem}
+
+  /* Arc — clear fixed nav height (~65px) + breathing room */
+  .arc-panel{padding:5.5rem 5vw 0}
+
+  /* Numbers — eyebrow */
+  .num-eyebrow{font-size:.62rem;letter-spacing:.14em}
+
+  /* Research — reduce gap above grid */
+  .res-grid{margin-top:1rem}
+  /* Research cards — comfortable padding on mobile */
+  .rc{padding:2rem 1.5rem}
+
+  /* Recognition — tighter row padding */
+  .rec-item{padding:1.5rem 0;gap:1rem}
+  .ri-title{font-size:clamp(1.2rem,6vw,1.8rem)}
+
+  /* Contact — single column on small phones so values don't truncate */
+  .ct-links{grid-template-columns:1fr;max-width:100%}
+  .ct-lv{font-size:.85rem}
+
+  /* Section inner divs — reduce horizontal padding */
+  #work>div,#research>div,#recognition>div{padding-left:4vw;padding-right:4vw}
+
+  /* Footer */
+  .ft-tagline{display:none}
+}
 </style>
 </head>
 <body>
