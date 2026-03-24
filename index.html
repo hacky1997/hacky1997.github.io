@@ -34,15 +34,62 @@ body::after{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;o
 body.h #cur-d{width:12px;height:12px;background:var(--gold)}
 body.h #cur-r{width:52px;height:52px;border-color:rgba(201,145,58,0.5)}
 
-/* ── LOADER ── */
-#loader{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;flex-direction:column;justify-content:flex-end;padding:10vw 8vw;overflow:hidden}
-.l-eye{font-family:var(--fm);font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--dim);margin-bottom:2.5rem;opacity:0}
-.l-nm{font-family:var(--fd);font-size:clamp(5rem,14vw,12rem);line-height:.86;color:var(--ink);overflow:hidden}
-.l-nm span{display:block;transform:translateY(110%)}
-.l-foot{display:flex;align-items:center;gap:2rem;margin-top:3.5rem}
-.l-bar{width:200px;height:1px;background:rgba(240,237,232,0.2);position:relative;overflow:hidden}
-.l-prog{position:absolute;left:0;top:0;height:100%;width:0;background:var(--gold)}
-.l-pct{font-size:.6rem;letter-spacing:.15em;color:var(--dim);min-width:32px}
+/* ══════════════════════════════════
+   HEX LOADER
+══════════════════════════════════ */
+#loader{
+  position:fixed;inset:0;background:var(--bg);z-index:10000;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  overflow:hidden;gap:0;padding:0 6vw
+}
+
+/* top eyebrow */
+.l-eye{
+  font-family:var(--fm);font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:2rem;opacity:0;position:relative;z-index:2;
+  align-self:flex-start
+}
+
+/* hex grid wrapper — position name over it */
+.l-hex-wrap{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  margin-bottom:1.8rem
+}
+.l-hex-svg{
+  display:block;overflow:visible;
+  filter:drop-shadow(0 0 1px rgba(201,145,58,.04))
+}
+
+/* name overlaid on hex grid */
+.l-nm-overlay{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;pointer-events:none;z-index:3;white-space:nowrap
+}
+.l-nm-line{
+  font-family:var(--fd);font-size:clamp(2.6rem,6vw,5.2rem);line-height:.85;
+  color:var(--ink);display:block;opacity:0;
+  letter-spacing:-.02em;
+  /* dark halo so text reads over hexes */
+  text-shadow:0 0 48px rgba(8,8,8,1),0 0 32px rgba(8,8,8,.95),0 0 16px rgba(8,8,8,.9);
+  transition:opacity .6s cubic-bezier(0,0,.2,1),transform .6s cubic-bezier(0,0,.2,1);
+  transform:translateY(6px)
+}
+
+/* bottom counter */
+.l-foot{
+  display:flex;align-items:baseline;gap:.5rem;align-self:flex-start;
+  position:relative;z-index:2
+}
+.l-pct-num{
+  font-family:var(--fd);font-size:clamp(3rem,7vw,5.5rem);
+  color:var(--gold);line-height:1;letter-spacing:-.02em
+}
+#lnum{display:inline}
+.l-pct-sym{font-size:.55em;color:var(--gold2);opacity:.7;margin-left:1px}
+.l-pct-label{
+  font-family:var(--fm);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--dim);margin-left:.6rem;align-self:center;padding-bottom:.2rem
+}
 
 /* ── CANVAS ── */
 #cvs{position:fixed;inset:0;z-index:1;pointer-events:none}
@@ -222,47 +269,26 @@ footer{border-top:1px solid var(--bdr);padding:2rem 6vw}
    MOBILE — 480px and below
 ══════════════════════════════════ */
 @media(max-width:480px){
-  /* Hero name — prevent overflow */
   .h-name{font-size:clamp(3.6rem,17vw,5rem);margin-bottom:2rem}
-
-  /* Hero tag — keep dot and text on same line */
   .h-tag{letter-spacing:.12em;flex-wrap:nowrap;margin-bottom:2rem}
-
-  /* Hero lines — tighten */
   .h-lines{margin-bottom:2.5rem}
-
-  /* Hero buttons — prevent inner text wrap */
   .btn-p,.btn-g{padding:.72rem 1.4rem;font-size:.68rem;white-space:nowrap}
   .h-acts{gap:.8rem;margin-bottom:2rem;flex-wrap:nowrap}
-
-  /* Hero micro — tighten letter spacing to prevent ugly wrap */
   .h-micro{letter-spacing:.08em;font-size:.62rem}
   .h-micro span{margin:0 .35rem}
-
-  /* Arc — clear fixed nav height (~65px) + breathing room */
   .arc-panel{padding:5.5rem 5vw 0}
-
-  /* Numbers — eyebrow */
   .num-eyebrow{font-size:.62rem;letter-spacing:.14em}
-
-  /* Research — reduce gap above grid */
   .res-grid{margin-top:1rem}
-  /* Research cards — comfortable padding on mobile */
   .rc{padding:2rem 1.5rem}
-
-  /* Recognition — tighter row padding */
   .rec-item{padding:1.5rem 0;gap:1rem}
   .ri-title{font-size:clamp(1.2rem,6vw,1.8rem)}
-
-  /* Contact — single column on small phones so values don't truncate */
   .ct-links{grid-template-columns:1fr;max-width:100%}
   .ct-lv{font-size:.85rem}
-
-  /* Section inner divs — reduce horizontal padding */
   #work>div,#research>div,#recognition>div{padding-left:4vw;padding-right:4vw}
-
-  /* Footer */
   .ft-tagline{display:none}
+  /* Hex loader on mobile */
+  .l-nm-line{font-size:clamp(1.8rem,9vw,3rem)}
+  .l-pct-num{font-size:clamp(2.2rem,8vw,3.5rem)}
 }
 </style>
 </head>
@@ -270,12 +296,19 @@ footer{border-top:1px solid var(--bdr);padding:2rem 6vw}
 
 <div id="cur"><div id="cur-d"></div><div id="cur-r"></div></div>
 
+<!-- ══ HEX LOADER ══ -->
 <div id="loader">
   <div class="l-eye">Portfolio — Initialising</div>
-  <div class="l-nm"><span>SAYAK</span><span>NASKAR</span></div>
+  <div class="l-hex-wrap">
+    <svg id="hexSvg" class="l-hex-svg" aria-hidden="true"></svg>
+    <div class="l-nm-overlay">
+      <span class="l-nm-line" id="lnm1">SAYAK</span>
+      <span class="l-nm-line" id="lnm2">NASKAR</span>
+    </div>
+  </div>
   <div class="l-foot">
-    <div class="l-bar"><div class="l-prog" id="lp"></div></div>
-    <div class="l-pct" id="lnum">0</div>
+    <div class="l-pct-num"><span id="lnum">0</span><span class="l-pct-sym">%</span></div>
+    <div class="l-pct-label">Loading</div>
   </div>
 </div>
 
@@ -310,8 +343,9 @@ footer{border-top:1px solid var(--bdr);padding:2rem 6vw}
     </div>
     <div class="h-micro">
       <span>5+ years</span><span>·</span>
-      <span>2 papers under review</span><span>·</span>
-      <span>1 CVE published</span>
+      <span>AI Researcher</span><span>·</span>
+      <span>1 CVE published</span><span>·</span>
+      <span>OSS contributor</span>
     </div>
   </div>
   <div class="h-scroll-caret" id="scrollCaret">
@@ -351,7 +385,7 @@ footer{border-top:1px solid var(--bdr);padding:2rem 6vw}
       <div class="ap-tags">
         <span class="ap-tag gold">$2M+ pipeline</span>
         <span class="ap-tag">TCS BFSI Scale</span>
-        <span class="ap-tag">Selenium · Jave · Maven · Junit</span>
+        <span class="ap-tag">Selenium · Java · Maven · Junit</span>
         <span class="ap-tag">1500+ automated Testcases</span>
         <span class="ap-tag">300+ critical automated scenarios</span>
       </div>
@@ -465,9 +499,10 @@ footer{border-top:1px solid var(--bdr);padding:2rem 6vw}
       <div class="rec-item rx">
         <div class="ri-l">
           <div class="ri-title">CVE-2020-8825</div>
-          <div class="ri-sub">PHP Vanilla · Responsible Disclosure &nbsp;·&nbsp; <a href="https://www.cve.org/CVERecord?id=CVE-2020-8825" target="_blank" style="color:var(--gold);text-decoration:none;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(201,145,58,.3);padding:.18rem .5rem;transition:background .22s" onmouseover="this.style.background='rgba(201,145,58,.1)'" onmouseout="this.style.background='transparent'">View CVE Record ↗</a></div>
+          <div class="ri-sub">PHP VanillaForum · Responsible Disclosure &nbsp;·&nbsp; </div>
         </div>
-        <div class="ri-r"><span class="ri-yr">2020</span><span class="ri-badge">Published CVE</span></div>
+        <div class="ri-r"><span class="ri-yr">2020</span><a href="https://www.cve.org/CVERecord?id=CVE-2020-8825" target="_blank" style="color:var(--gold);text-decoration:none;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(201,145,58,.3);padding:.18rem .5rem;transition:background .22s" onmouseover="this.style.background='rgba(201,145,58,.1)'" onmouseout="this.style.background='transparent'">View CVE Record ↗</a>
+          <!-- <span class="ri-badge">Published CVE</span></div> -->
       </div>
       <div class="rec-item rx d1">
         <div class="ri-l">
@@ -482,6 +517,14 @@ footer{border-top:1px solid var(--bdr);padding:2rem 6vw}
           <div class="ri-sub">Client satisfaction 3.2 → 4.7 / 5 · Transformational delivery</div>
         </div>
         <div class="ri-r"><span class="ri-yr">2022</span><span class="ri-badge">Excellence Award</span></div>
+      </div>
+      <!-- OSS Contributor recognition item -->
+      <div class="rec-item rx d3">
+        <div class="ri-l">
+          <div class="ri-title">Open Source Contributor</div>
+          <div class="ri-sub">GitHub · CenterDistill · Public automation frameworks &nbsp;·&nbsp; <a href="https://github.com/hacky1997" target="_blank" style="color:var(--gold);text-decoration:none;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(201,145,58,.3);padding:.18rem .5rem;transition:background .22s" onmouseover="this.style.background='rgba(201,145,58,.1)'" onmouseout="this.style.background='transparent'">github.com/hacky1997 ↗</a></div>
+        </div>
+        <div class="ri-r"><span class="ri-yr">2020–</span><span class="ri-badge">OSS Contributor</span></div>
       </div>
     </div>
   </div>
@@ -575,15 +618,170 @@ function loop3d(){requestAnimationFrame(loop3d);netGroup.rotation.y+=currentRspd
 loop3d();
 window.addEventListener('resize',()=>{CAM.aspect=window.innerWidth/window.innerHeight;CAM.updateProjectionMatrix();R3.setSize(window.innerWidth,window.innerHeight);});
 
-/* ══ LOADER ══ */
-const loaderEl=document.getElementById('loader'),lp=document.getElementById('lp'),lnum=document.getElementById('lnum');
-const ns=document.querySelectorAll('.l-nm span');
-gsap.to('.l-eye',{opacity:1,y:0,duration:.5,delay:.1});
-gsap.to(ns[0],{y:'0%',duration:.72,ease:'power4.out',delay:.18});
-gsap.to(ns[1],{y:'0%',duration:.72,ease:'power4.out',delay:.32});
-let pct=0;
-const iv=setInterval(()=>{pct+=Math.random()*13+3;if(pct>100)pct=100;lp.style.width=pct+'%';lnum.textContent=Math.floor(pct);if(pct===100){clearInterval(iv);setTimeout(exitLoad,250)}},85);
-function exitLoad(){gsap.to(loaderEl,{opacity:0,duration:.55,ease:'power2.in',onComplete:()=>{loaderEl.style.display='none';boot()}});}
+/* ══════════════════════════════════
+   HEX LOADER
+══════════════════════════════════ */
+(function initHexLoader(){
+  const HEX_R  = 22;                          // circumradius of each hexagon
+  const COLS   = 8;
+  const ROWS   = 6;
+  const CS     = HEX_R * Math.sqrt(3);        // column spacing  (≈38.1)
+  const RS     = HEX_R * 1.5;                 // row spacing     (33)
+  const PAD    = HEX_R + 4;
+
+  const svgEl  = document.getElementById('hexSvg');
+  const lnm1   = document.getElementById('lnm1');
+  const lnm2   = document.getElementById('lnm2');
+  const lnum   = document.getElementById('lnum');
+  const loaderEl = document.getElementById('loader');
+
+  /* ── build SVG dimensions ── */
+  const svgW = COLS * CS + CS * 0.5 + PAD * 2;
+  const svgH = ROWS * RS + HEX_R * 0.5 + PAD * 2;
+
+  /* scale down on small screens */
+  const maxW = Math.min(svgW, window.innerWidth * 0.88);
+  svgEl.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
+  svgEl.setAttribute('width',  maxW);
+  svgEl.setAttribute('height', maxW * (svgH / svgW));
+
+  /* ── SVG defs: glow filters ── */
+  const ns = 'http://www.w3.org/2000/svg';
+  const defs = document.createElementNS(ns, 'defs');
+  defs.innerHTML = `
+    <filter id="hgA" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="hgB" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+  svgEl.appendChild(defs);
+
+  /* ── pointy-top hex points helper ── */
+  function hexPts(cx, cy, r) {
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const a = Math.PI / 3 * i - Math.PI / 6;
+      pts.push(`${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`);
+    }
+    return pts.join(' ');
+  }
+
+  /* ── generate hex positions ── */
+  const hexData = [];
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      const x = PAD + col * CS + (row % 2 === 1 ? CS * 0.5 : 0) + CS * 0.5;
+      const y = PAD + row * RS + HEX_R;
+      hexData.push({ x, y });
+    }
+  }
+
+  /* ── sort by distance from grid centre → ripple reveal ── */
+  const cx = svgW * 0.5;
+  const cy = svgH * 0.5;
+  hexData.sort((a, b) =>
+    Math.hypot(a.x - cx, a.y - cy) - Math.hypot(b.x - cx, b.y - cy)
+  );
+
+  /* ── render polygons ── */
+  const hexEls = hexData.map(({ x, y }) => {
+    const poly = document.createElementNS(ns, 'polygon');
+    poly.setAttribute('points', hexPts(x, y, HEX_R - 2));
+    poly.setAttribute('fill',         'rgba(201,145,58,0.03)');
+    poly.setAttribute('stroke',       'rgba(201,145,58,0.11)');
+    poly.setAttribute('stroke-width', '0.7');
+    /* CSS transition keeps it smooth without JS per-frame updates */
+    poly.style.transition = 'fill 0.35s ease, stroke 0.35s ease, filter 0.35s ease';
+    svgEl.appendChild(poly);
+    return poly;
+  });
+
+  const TOTAL = hexEls.length; // 48
+
+  /* ── state machine for each hex ── */
+  const STATE_IDLE    = 0;
+  const STATE_ACTIVE  = 1; // currently "hot"
+  const STATE_SETTLED = 2;
+  const hexState = new Array(TOTAL).fill(STATE_IDLE);
+
+  function applyState(i, state) {
+    if (hexState[i] === state) return;
+    hexState[i] = state;
+    const poly = hexEls[i];
+    if (state === STATE_IDLE) {
+      poly.setAttribute('fill',   'rgba(201,145,58,0.03)');
+      poly.setAttribute('stroke', 'rgba(201,145,58,0.11)');
+      poly.removeAttribute('filter');
+    } else if (state === STATE_ACTIVE) {
+      poly.setAttribute('fill',   'rgba(201,145,58,0.88)');
+      poly.setAttribute('stroke', '#E8B86D');
+      poly.setAttribute('filter', 'url(#hgB)');
+    } else {
+      // settled — dimmed amber so the grid looks "scanned"
+      poly.setAttribute('fill',   'rgba(201,145,58,0.14)');
+      poly.setAttribute('stroke', 'rgba(201,145,58,0.38)');
+      poly.setAttribute('filter', 'url(#hgA)');
+    }
+  }
+
+  /* ── animate hex grid from pct 0→100 ── */
+  let lastActive = -1;
+  function updateHexes(pct) {
+    // how many hexes should be "done or active"
+    const filled = Math.floor((pct / 100) * TOTAL);
+    const active = Math.min(filled, TOTAL - 1);
+
+    if (active === lastActive) return;
+    lastActive = active;
+
+    hexEls.forEach((_, i) => {
+      if (i < active)        applyState(i, STATE_SETTLED);
+      else if (i === active) applyState(i, STATE_ACTIVE);
+      else                   applyState(i, STATE_IDLE);
+    });
+  }
+
+  /* ── boot eyebrow ── */
+  gsap.to('.l-eye', { opacity: 1, y: 0, duration: .5, delay: .12 });
+
+  /* ── progress counter ── */
+  let pct = 0;
+  let nameShown = false;
+
+  const iv = setInterval(() => {
+    pct += Math.random() * 10 + 2.5;
+    if (pct > 100) pct = 100;
+
+    lnum.textContent = Math.floor(pct);
+    updateHexes(pct);
+
+    /* reveal name at 38% */
+    if (!nameShown && pct >= 38) {
+      nameShown = true;
+      gsap.to([lnm1, lnm2], {
+        opacity: 1, y: 0, duration: .7, ease: 'power3.out', stagger: .1
+      });
+    }
+
+    if (pct >= 100) {
+      clearInterval(iv);
+      /* settle all hexes, brief pause, then exit */
+      hexEls.forEach((_, i) => applyState(i, STATE_SETTLED));
+      setTimeout(exitLoad, 340);
+    }
+  }, 88);
+
+  /* ── exit ── */
+  function exitLoad() {
+    gsap.to(loaderEl, {
+      opacity: 0, duration: .58, ease: 'power2.in',
+      onComplete: () => { loaderEl.style.display = 'none'; boot(); }
+    });
+  }
+})();
 
 /* ══ BOOT ══ */
 let lenis;
@@ -637,7 +835,6 @@ function setupReveal(){
 
 /* ══ CINEMATIC EFFECTS ══ */
 function setupCinematic(){
-  /* 1. Section gold wipe lines */
   ['work','research','recognition','contact'].forEach(id=>{
     const wipe=document.getElementById('wipe-'+id);
     if(wipe){
@@ -646,21 +843,15 @@ function setupCinematic(){
       }});
     }
   });
-
-  /* 2. Number items staggered fly-in */
   gsap.set('.num-item',{opacity:0,y:30});
   ScrollTrigger.create({trigger:'#numbers',start:'top 75%',onEnter:()=>{
     gsap.to('.num-item',{opacity:1,y:0,duration:.8,ease:'power3.out',stagger:.1});
   }});
-
-  /* 3. Recognition items slide in from left */
   ScrollTrigger.create({trigger:'#recognition',start:'top 80%',onEnter:()=>{
     document.querySelectorAll('.rec-item').forEach((el,i)=>{
       gsap.fromTo(el,{x:-18,opacity:0},{x:0,opacity:1,duration:.75,ease:'power3.out',delay:i*.12});
     });
   }});
-
-  /* 4. Contact heading parallax */
   gsap.to('.ct-h',{
     y:-40,ease:'none',
     scrollTrigger:{trigger:'#contact',start:'top bottom',end:'bottom top',scrub:1.5}
