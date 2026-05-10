@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Pinki — From Buro</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Sacramento&family=Cinzel:wght@400;600&display=swap');
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --rose: #c4526e; --deep-rose: #8b1a35; --gold: #e8c87a;
+  --ink: #1a0a2e; --deep: #0d0618; --star: #fff8f0;
+}
+html, body { width:100%; height:100%; overflow:hidden; background:var(--deep); font-family:'Cormorant Garamond',serif; color:var(--star); }
+#universe { position:fixed; inset:0; z-index:0; }
+#final-glow { position:fixed; inset:0; z-index:1; background:radial-gradient(ellipse at center,rgba(196,82,110,0.2) 0%,transparent 70%); pointer-events:none; opacity:0; transition:opacity 3s ease; }
+#final-glow.lit { opacity:1; }
+
+.screen { position:fixed; inset:0; z-index:10; display:flex; align-items:center; justify-content:center; flex-direction:column; opacity:0; pointer-events:none; transition:opacity 0.9s ease; }
+.screen.active { opacity:1; pointer-events:all; }
+
+/* ENVELOPE */
+#s-envelope { gap:2rem; }
+.envelope-wrap { width:min(360px,88vw); cursor:pointer; animation:float 4s ease-in-out infinite; filter:drop-shadow(0 0 40px rgba(196,82,110,0.45)); }
+.envelope-wrap svg { width:100%; }
+@keyframes float { 0%,100%{ transform:translateY(0) rotate(-1deg); } 50%{ transform:translateY(-16px) rotate(1deg); } }
+.open-hint { font-family:'Sacramento',cursive; font-size:clamp(1.4rem,4vw,2rem); color:var(--gold); animation:pulse 2.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+/* PAPER */
+.paper { position:relative; background:linear-gradient(160deg,#fdf6ec 0%,#fcebd8 60%,#f9e0cc 100%); border-radius:3px; color:var(--ink); box-shadow:0 0 0 1px rgba(196,82,110,0.12),0 10px 60px rgba(10,3,20,0.75); overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--rose) transparent; }
+.paper::before { content:''; position:absolute; inset:0; pointer-events:none; border-radius:3px; background:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,rgba(196,82,110,0.07) 32px); }
+.paper::-webkit-scrollbar { width:3px; }
+.paper::-webkit-scrollbar-thumb { background:var(--rose); border-radius:2px; }
+.wax-seal { position:absolute; top:-26px; left:50%; transform:translateX(-50%); width:52px; height:52px; background:radial-gradient(circle at 35% 35%,#e05070,#9b2040); border-radius:50%; box-shadow:0 4px 18px rgba(155,32,64,0.6),inset 0 -2px 4px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
+
+/* SCREEN 2 */
+#s-sorry-open { padding:2rem; }
+.sorry-open-paper { width:min(580px,96vw); max-height:90vh; padding:clamp(2.5rem,6vw,4rem) clamp(2rem,6vw,4rem); text-align:center; }
+.ltr-date { font-style:italic; font-size:0.82rem; color:var(--rose); opacity:0.65; text-align:right; margin-bottom:2rem; letter-spacing:0.04em; }
+.sorry-headline { font-family:'Sacramento',cursive; font-size:clamp(2.4rem,8vw,4rem); color:var(--rose); line-height:1.1; margin-bottom:1.6rem; }
+.sorry-intro p { font-size:clamp(1rem,2.6vw,1.15rem); line-height:1.95; font-weight:300; color:#2a1020; margin-bottom:1.2rem; opacity:0; transform:translateY(8px); transition:opacity 0.7s ease,transform 0.7s ease; }
+.sorry-intro p.show { opacity:1; transform:translateY(0); }
+.sorry-intro em { color:var(--rose); font-style:italic; }
+.sorry-intro strong { font-weight:600; color:#1a0a2e; }
+.next-btn { margin-top:2rem; display:inline-block; font-family:'Sacramento',cursive; font-size:1.5rem; color:var(--rose); background:transparent; border:1px solid rgba(196,82,110,0.4); border-radius:40px; padding:0.5rem 2.2rem; cursor:pointer; opacity:0; transition:opacity 0.6s ease,background 0.3s,color 0.3s; }
+.next-btn:hover { background:var(--rose); color:#fff; }
+.next-btn.show { opacity:1; }
+
+/* SCREEN 3 COUNTER */
+#s-counter { padding:1.5rem; }
+.counter-paper { width:min(560px,96vw); max-height:92vh; padding:clamp(2rem,5vw,3.5rem) clamp(1.5rem,5vw,3.5rem); text-align:center; }
+.counter-title { font-family:'Sacramento',cursive; font-size:clamp(1.6rem,5vw,2.4rem); color:var(--rose); margin-bottom:1.4rem; }
+.counter-big { font-family:'Cinzel',serif; font-size:clamp(3.5rem,12vw,6.5rem); font-weight:600; color:var(--rose); line-height:1; letter-spacing:-0.02em; text-shadow:0 0 40px rgba(196,82,110,0.5),0 0 80px rgba(196,82,110,0.2); display:block; }
+.counter-word { font-family:'Sacramento',cursive; font-size:clamp(1.8rem,5vw,2.8rem); color:#2a1020; display:block; margin-top:0.4rem; }
+.counter-sub { font-size:clamp(0.82rem,2vw,0.95rem); color:rgba(42,16,32,0.55); font-style:italic; display:block; margin-top:0.5rem; min-height:1.4em; }
+.progress-track { width:100%; height:5px; background:rgba(196,82,110,0.12); border-radius:3px; margin:1.2rem 0; overflow:hidden; }
+.progress-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--rose),var(--gold)); border-radius:3px; transition:width 0.08s linear; }
+.sorry-cloud { max-height:72px; overflow:hidden; font-size:0.75rem; line-height:1.8; color:rgba(42,16,32,0.38); font-style:italic; word-break:break-word; margin-bottom:0.5rem; min-height:1.5rem; }
+.counter-final-msg { font-size:clamp(0.9rem,2.2vw,1.05rem); font-style:italic; color:var(--rose); margin-top:1rem; opacity:0; transition:opacity 1.2s ease; line-height:1.7; }
+.counter-final-msg.show { opacity:1; }
+
+/* SCREEN 4 PROMISES */
+#s-promises { padding:1.5rem; }
+.promises-paper { width:min(580px,96vw); max-height:92vh; padding:clamp(2rem,5vw,3.5rem) clamp(1.5rem,5vw,3rem); }
+.promises-title { font-family:'Sacramento',cursive; font-size:clamp(2rem,6vw,3rem); color:var(--rose); text-align:center; margin-bottom:1.8rem; }
+.promise-card { display:flex; align-items:flex-start; gap:1rem; padding:1rem 1.2rem; margin-bottom:0.9rem; background:rgba(196,82,110,0.06); border-left:3px solid var(--rose); border-radius:0 6px 6px 0; opacity:0; transform:translateX(-10px); transition:opacity 0.6s ease,transform 0.6s ease; }
+.promise-card.show { opacity:1; transform:translateX(0); }
+.promise-icon { font-size:1.3rem; line-height:1; flex-shrink:0; margin-top:0.1rem; }
+.promise-text { font-size:clamp(0.9rem,2.3vw,1.05rem); line-height:1.8; color:#2a1020; font-weight:300; }
+.promise-text em { color:var(--rose); font-style:italic; }
+.sign-off { margin-top:2rem; text-align:right; opacity:0; transition:opacity 1.2s ease; }
+.sign-off.show { opacity:1; }
+.sign-forever { font-family:'Sacramento',cursive; font-size:clamp(1.4rem,4vw,2rem); color:var(--rose); display:block; line-height:1.2; }
+.sign-name { font-family:'Sacramento',cursive; font-size:clamp(2rem,6vw,3rem); color:var(--ink); display:block; }
+
+/* HEARTS & SPARKLE */
+.heart-burst { position:fixed; pointer-events:none; z-index:50; animation:hfly 2s ease-out forwards; }
+@keyframes hfly { 0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg);} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.2) rotate(var(--rot));} }
+.sparkle { position:fixed; pointer-events:none; z-index:100; width:5px; height:5px; border-radius:50%; animation:sp 0.9s ease-out forwards; }
+@keyframes sp { 0%{opacity:1;transform:scale(1) translateY(0);} 100%{opacity:0;transform:scale(0) translateY(-22px);} }
+</style>
+</head>
+<body>
+
+<canvas id="universe"></canvas>
+<div id="final-glow"></div>
+
+<!-- SCREEN 1: ENVELOPE -->
+<div class="screen active" id="s-envelope">
+  <div class="envelope-wrap" id="env-wrap">
+    <svg viewBox="0 0 380 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="30" width="372" height="226" rx="6" fill="#fdf0e8" stroke="#c4526e" stroke-width="1.5"/>
+      <path d="M4 36 L190 170 L376 36 Z" fill="#f9e0cc"/>
+      <path d="M4 30 L190 158 L376 30 Z" fill="#fcebd8" stroke="#c4526e" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M4 30 L4 256 L190 158 Z" fill="#f5d8c8" stroke="#c4526e" stroke-width="1"/>
+      <path d="M376 30 L376 256 L190 158 Z" fill="#f5d8c8" stroke="#c4526e" stroke-width="1"/>
+      <path d="M4 256 L190 158 L376 256 Z" fill="#fcebd8" stroke="#c4526e" stroke-width="1"/>
+      <circle cx="190" cy="136" r="26" fill="url(#wax)" filter="url(#sh)"/>
+      <text x="190" y="143" text-anchor="middle" font-size="24" fill="rgba(255,255,255,0.9)">♥</text>
+      <text x="22" y="60" font-size="14" fill="#c4526e" opacity="0.35">✦</text>
+      <text x="348" y="60" font-size="14" fill="#c4526e" opacity="0.35">✦</text>
+      <defs>
+        <radialGradient id="wax" cx="35%" cy="35%">
+          <stop offset="0%" stop-color="#e05070"/>
+          <stop offset="100%" stop-color="#8b1a35"/>
+        </radialGradient>
+        <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#8b1a35" flood-opacity="0.5"/>
+        </filter>
+      </defs>
+    </svg>
+  </div>
+  <div class="open-hint">tap to open &hearts;</div>
+</div>
+
+<!-- SCREEN 2: SORRY OPENER -->
+<div class="screen" id="s-sorry-open">
+  <div class="paper sorry-open-paper">
+    <div class="wax-seal">&#9829;</div>
+    <div class="ltr-date" id="letter-date"></div>
+    <div class="sorry-headline">Pinki... I am sorry.</div>
+    <div class="sorry-intro" id="sorry-intro">
+      <p>Not the kind of sorry that is just a word. <em>The kind that sits heavy on my chest</em> until I know you are okay.</p>
+      <p>I hurt you. And no matter what happened, <strong>that is never something I will excuse in myself.</strong> You deserve someone who handles your heart like it is the most precious thing in the world.</p>
+      <p>I have been thinking about every moment I made you feel small, or ignored, or not enough. And I want you to know -- <em>it was never you.</em> It was always me not being enough for you.</p>
+      <p>So before anything else -- I owe you a real, honest, from the bottom of my soul <strong>sorry.</strong></p>
+    </div>
+    <button class="next-btn" id="open-counter-btn">see how sorry I am &rarr;</button>
+  </div>
+</div>
+
+<!-- SCREEN 3: COUNTER -->
+<div class="screen" id="s-counter">
+  <div class="paper counter-paper">
+    <div class="wax-seal">&#9829;</div>
+    <div class="counter-title">Buro is saying sorry to Pinki...</div>
+    <span class="counter-big" id="sorry-num">0</span>
+    <span class="counter-word" id="sorry-word">Sorry</span>
+    <span class="counter-sub" id="sorry-sub">every single one is real...</span>
+    <div class="progress-track"><div class="progress-fill" id="sorry-bar"></div></div>
+    <div class="sorry-cloud" id="sorry-cloud"></div>
+    <div class="counter-final-msg" id="counter-final">
+      1,00,000 times and I would say it 1,00,000 more.<br>
+      <em>Because you are worth every single one, Pinki.</em>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: PROMISES -->
+<div class="screen" id="s-promises">
+  <div class="paper promises-paper">
+    <div class="wax-seal">&#9829;</div>
+    <div class="promises-title">What Buro promises, from today</div>
+    <div class="promise-card"><div class="promise-icon">🤝</div><div class="promise-text">I will <em>never</em> make you feel like your feelings are too much. They are never too much. They are everything.</div></div>
+    <div class="promise-card"><div class="promise-icon">🌙</div><div class="promise-text">I will not let any fight or silence go to sleep without making sure you know I love you.</div></div>
+    <div class="promise-card"><div class="promise-icon">🗣️</div><div class="promise-text">I will <em>talk to you</em> properly and honestly, instead of going quiet or being careless with my words.</div></div>
+    <div class="promise-card"><div class="promise-icon">💛</div><div class="promise-text">I will choose you <em>consciously</em> every single day -- not just when it is easy, but especially when it is hard.</div></div>
+    <div class="promise-card"><div class="promise-icon">🛡️</div><div class="promise-text">I will be your safe place. The one person where you never have to be afraid of being hurt or judged.</div></div>
+    <div class="promise-card"><div class="promise-icon">🥺</div><div class="promise-text">And if I ever mess up again -- I will come to you <em>first</em>, with honesty and a real sorry, not excuses.</div></div>
+    <div class="sign-off" id="sign-off">
+      <span class="sign-forever">Yours completely, always --</span>
+      <span class="sign-name">Buro &#9829;</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// UNIVERSE
+var canvas = document.getElementById('universe');
+var ctx = canvas.getContext('2d');
+var W, H, stars = [], fhearts = [];
+
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+
+function mkStar(init){
+  return {
+    x: Math.random()*W, y: init ? Math.random()*H : -5,
+    r: Math.random()*1.6+0.3, speed: Math.random()*0.25+0.05,
+    alpha: Math.random()*0.7+0.3,
+    tw: Math.random()*0.02+0.005, to: Math.random()*Math.PI*2,
+    warm: Math.random()<0.15, ca: 0
+  };
+}
+function mkHeart(){
+  return { x:Math.random()*W, y:H+20, s:Math.random()*12+5, sp:Math.random()*0.45+0.15, a:Math.random()*0.2+0.04, d:(Math.random()-0.5)*0.4, wb:Math.random()*Math.PI*2, wbs:Math.random()*0.02+0.005 };
+}
+
+for(var i=0;i<200;i++) stars.push(mkStar(true));
+for(var i=0;i<16;i++) fhearts.push(mkHeart());
+
+function render(t){
+  ctx.clearRect(0,0,W,H);
+  var bg=ctx.createRadialGradient(W*.5,H*.4,0,W*.5,H*.5,W*.8);
+  bg.addColorStop(0,'#150828'); bg.addColorStop(.5,'#0d0618'); bg.addColorStop(1,'#060310');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  var clouds=[[W*.2,H*.3,W*.35,'rgba(196,82,110,0.045)'],[W*.8,H*.6,W*.28,'rgba(120,55,150,0.05)'],[W*.5,H*.75,W*.4,'rgba(196,82,110,0.03)']];
+  for(var ci=0;ci<clouds.length;ci++){
+    var cl=clouds[ci], g=ctx.createRadialGradient(cl[0],cl[1],0,cl[0],cl[1],cl[2]);
+    g.addColorStop(0,cl[3]); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  }
+  for(var si=0;si<stars.length;si++){
+    var s=stars[si]; s.y+=s.speed;
+    if(s.y>H+5){ s.y=-5; s.x=Math.random()*W; }
+    s.ca=s.alpha*(0.5+0.5*Math.sin(t*s.tw*1000+s.to));
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=(s.warm?'rgba(255,200,180,':'rgba(255,248,240,')+s.ca+')'; ctx.fill();
+  }
+  for(var hi=0;hi<fhearts.length;hi++){
+    var h=fhearts[hi]; h.y-=h.sp; h.x+=h.d+Math.sin(t*h.wbs*1000+h.wb)*0.4;
+    if(h.y<-30){ h.y=H+20; h.x=Math.random()*W; }
+    ctx.save(); ctx.globalAlpha=h.a; ctx.font=h.s+'px serif'; ctx.fillStyle='#c4526e'; ctx.fillText('\u2665',h.x,h.y); ctx.restore();
+  }
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// DATE
+var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var now=new Date();
+document.getElementById('letter-date').textContent=months[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear();
+
+// SPARKLE
+var lastSp=0;
+document.addEventListener('mousemove',function(e){
+  if(Date.now()-lastSp<90) return; lastSp=Date.now();
+  var s=document.createElement('div'); s.className='sparkle';
+  s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px';
+  s.style.background=Math.random()<.5?'#e8c87a':'#c4526e';
+  document.body.appendChild(s); setTimeout(function(){s.remove();},900);
+});
+
+// HEARTS
+function burstHearts(cx,cy,count){
+  for(var i=0;i<count;i++){
+    var h=document.createElement('div'); h.className='heart-burst';
+    h.textContent=Math.random()<.7?'\u2665':'\u2726';
+    var angle=(Math.PI*2/count)*i+Math.random()*.6;
+    var dist=70+Math.random()*150;
+    h.style.left=cx+'px'; h.style.top=cy+'px'; h.style.fontSize=(1+Math.random()*1.4)+'rem';
+    h.style.color=Math.random()<.5?'#c4526e':'#e8c87a';
+    h.style.setProperty('--tx',Math.cos(angle)*dist+'px');
+    h.style.setProperty('--ty',(Math.sin(angle)*dist-50)+'px');
+    h.style.setProperty('--rot',(Math.random()*360)+'deg');
+    h.style.animationDelay=(Math.random()*.4)+'s';
+    document.body.appendChild(h); setTimeout(function(){h.remove();},2500);
+  }
+}
+
+// SCREEN SWITCH
+function goTo(id){
+  var screens=document.querySelectorAll('.screen');
+  for(var i=0;i<screens.length;i++) screens[i].classList.remove('active');
+  setTimeout(function(){ document.getElementById(id).classList.add('active'); },100);
+}
+
+// ENVELOPE CLICK
+document.getElementById('env-wrap').addEventListener('click', function(){
+  burstHearts(W/2, H/2, 20);
+  goTo('s-sorry-open');
+  setTimeout(revealSorryOpen, 500);
+});
+
+// SORRY OPEN REVEAL
+function revealSorryOpen(){
+  var paras=document.querySelectorAll('#sorry-intro p');
+  for(var i=0;i<paras.length;i++){
+    (function(p,delay){ setTimeout(function(){ p.classList.add('show'); },delay); })(paras[i], 300+i*560);
+  }
+  var btnDelay=300+paras.length*560+300;
+  setTimeout(function(){ document.getElementById('open-counter-btn').classList.add('show'); }, btnDelay);
+}
+
+// COUNTER BUTTON
+document.getElementById('open-counter-btn').addEventListener('click', function(){
+  goTo('s-counter');
+  setTimeout(runCounter, 700);
+});
+
+// COUNTER
+function runCounter(){
+  var numEl=document.getElementById('sorry-num');
+  var barEl=document.getElementById('sorry-bar');
+  var subEl=document.getElementById('sorry-sub');
+  var cloudEl=document.getElementById('sorry-cloud');
+  var wordEl=document.getElementById('sorry-word');
+  var finalEl=document.getElementById('counter-final');
+  var TOTAL=100000;
+
+  var phrases=["Sorry","I am sorry","Maaf karo","Maaf kar do","Sorry Pinki","Sorry bby","Sorry Buri","Forgive me","Please forgive me","Dil se sorry","Sach mein sorry","Pakka sorry","Buro is sorry","Sorry from the heart","Truly sorry","So so sorry"];
+
+  var count=0, lastPhrase=0, cloud=[], lastTime=null, acc=0;
+
+  function speed(c){
+    if(c<5000)  return 130;
+    if(c<45000) return 320;
+    if(c<55000) return 60;
+    if(c<90000) return 280;
+    return 420;
+  }
+
+  function milestone10(){ subEl.textContent='10,000 sorrys... Buro means every one'; burstHearts(W/2,H*.6,7); }
+  function milestone50(){ subEl.textContent='50,000... slowing down to feel every sorry'; burstHearts(W/2,H*.6,10); }
+  function milestone90(){ subEl.textContent='Almost there... every one is real, Pinki'; }
+
+  var hit10=false, hit50=false, hit90=false;
+
+  function tick(ts){
+    if(!lastTime) lastTime=ts;
+    var dt=ts-lastTime; lastTime=ts;
+    acc+=speed(count)*(dt/16.67);
+    var add=Math.floor(acc); acc-=add;
+    count=Math.min(count+add,TOTAL);
+
+    numEl.textContent=count.toLocaleString('en-IN');
+    barEl.style.width=(count/TOTAL*100)+'%';
+
+    if(count-lastPhrase>2500||lastPhrase===0){
+      var ph=phrases[Math.floor(Math.random()*phrases.length)];
+      wordEl.textContent=ph;
+      lastPhrase=count;
+      cloud.push(ph);
+      if(cloud.length>55) cloud.shift();
+      cloudEl.textContent=cloud.join(' . ');
+    }
+
+    if(!hit10&&count>=10000){ hit10=true; milestone10(); }
+    if(!hit50&&count>=50000){ hit50=true; milestone50(); }
+    if(!hit90&&count>=90000){ hit90=true; milestone90(); }
+
+    if(count<TOTAL){
+      requestAnimationFrame(tick);
+    } else {
+      numEl.textContent='1,00,000';
+      wordEl.textContent='Sorrys from Buro';
+      subEl.textContent='Every single one. From the deepest part of my heart.';
+      barEl.style.width='100%';
+      burstHearts(W/2,H*.5,24);
+      document.getElementById('final-glow').classList.add('lit');
+      setTimeout(function(){ finalEl.classList.add('show'); },800);
+      setTimeout(function(){ goTo('s-promises'); revealPromises(); },5000);
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+// PROMISES
+function revealPromises(){
+  var cards=document.querySelectorAll('.promise-card');
+  for(var i=0;i<cards.length;i++){
+    (function(c,delay){ setTimeout(function(){ c.classList.add('show'); burstHearts(W/2,H*.85,4); },delay); })(cards[i], 400+i*600);
+  }
+  setTimeout(function(){ document.getElementById('sign-off').classList.add('show'); }, 400+cards.length*600+500);
+}
+
+document.getElementById('s-promises').addEventListener('click',function(e){ burstHearts(e.clientX,e.clientY,8); });
+document.getElementById('s-counter').addEventListener('click',function(e){ burstHearts(e.clientX,e.clientY,6); });
+</script>
+</body>
+</html>
